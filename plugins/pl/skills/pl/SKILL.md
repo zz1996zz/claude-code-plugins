@@ -10,10 +10,10 @@ allowed-tools: Skill(team-pl-orchestrator)
 
 Before any workflow action, invoke the hidden `team-pl-orchestrator` skill through the `Skill` tool and follow it. This keeps the orchestrator instructions in the skill lifecycle across turns and auto-compaction.
 
-Treat explicit `/pl` invocation as explicit permission to use the team PL orchestration workflow for the current request, including role-agent discussion, implementation, verification, and Obsidian memory updates.
+Treat explicit `/pl` invocation as explicit permission to use the team PL orchestration workflow for the current request, including role-agent discussion, implementation, verification, and memory backend updates.
 
 ## Request
 
 $ARGUMENTS
 
-For non-trivial feature work, do not begin implementation until the orchestrator has inspected current tasks and explicitly spawned the required Claude Code Agent Teams teammates using the namespaced `team-pl-*` agent types. If the `Skill` tool or hidden skill is unavailable, read `${CLAUDE_PLUGIN_ROOT}/skills/team-pl-orchestrator/SKILL.md` directly and follow it as the fallback source of truth.
+For non-trivial feature work, do not begin implementation until the orchestrator has inspected current tasks and explicitly spawned the required Claude Code Agent Teams teammates using the namespaced `team-pl-*` agent types. If the `Skill` tool or hidden skill is unavailable, read ${CLAUDE_PLUGIN_ROOT}/skills/team-pl-orchestrator/SKILL.md directly and follow it as the fallback source of truth.
