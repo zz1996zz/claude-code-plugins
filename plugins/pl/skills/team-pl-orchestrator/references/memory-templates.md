@@ -6,7 +6,6 @@ Use these templates in the configured memory backend (see the adapter references
 
 - Note Format
 - Workspace Layout
-- Helper Script
 - Feature Note
 - Decision Note
 
@@ -16,7 +15,7 @@ Feature and decision notes start with YAML frontmatter (OKF-compatible: `type`, 
 
 ## Workspace Layout
 
-Store new work under a 업무/project namespace:
+Store new work under a 업무/project namespace (path shown for the Obsidian backend; the Notion adapter maps the same structure to databases):
 
 ```text
 <vault-root>/
@@ -40,22 +39,6 @@ Selection rule:
 Never put unrelated 업무 A and 업무 B in the same feature note or decision folder.
 
 Use relative Markdown links between feature and decision notes. The feature note links to every durable decision, and each decision links back to its feature. Keep superseded notes; mark their status and successor instead of deleting history.
-
-## Helper Script
-
-Prefer the bundled helper for new notes and index maintenance:
-
-```bash
-python3 <skill-dir>/scripts/memory_note.py init-work <work-slug> --repo <repo-path>
-python3 <skill-dir>/scripts/memory_note.py feature <work-slug> "<feature title>" --repo <repo-path>
-python3 <skill-dir>/scripts/memory_note.py decision <work-slug> "<decision title>" --feature features/<feature-file>.md
-python3 <skill-dir>/scripts/memory_note.py check
-```
-
-Use `${CLAUDE_PLUGIN_ROOT}/skills/team-pl-orchestrator` as `<skill-dir>` when the current skill directory is unclear.
-The `check` command synchronizes workspace indexes, handles both section-based legacy indexes and the current `Features:`/`Decisions:` layout without duplicate entries, validates local Markdown links, and enforces the feature-note frontmatter `status:` vocabulary (`in-progress`, `done`, `done-with-risks`, `blocked`; the creator rejects other values too; a plain body `Status:` line is read only as a legacy fallback). Free-text detail goes in the body or a frontmatter `status_note:` field.
-The helper rejects invalid dates, multiline/control-character metadata, symlinked work namespaces, feature paths outside the selected work namespace, and same-date slug collisions between different titles. Markdown link labels are escaped when indexes and backlinks are generated.
-After changing the helper, run `python3 <skill-dir>/scripts/test_memory_note.py` before using it on the real vault.
 
 ## Feature Note
 

@@ -25,11 +25,17 @@ These two rules bind the lead itself and stay inside the compaction reattach win
 
 ## Memory
 
-Use the configured memory backend as the source of truth for decisions. `references/memory-templates.md` owns the layout, note templates, and `memory_note.py` helper commands.
+Durable memory lives in the user-selected backend. Before feature work, load the user config: `python3 "${CLAUDE_PLUGIN_ROOT}/skills/team-pl-orchestrator/scripts/pl_user_config.py" --config "${CLAUDE_PLUGIN_DATA}/config.json" show`.
 
-Before feature work: read the vault `INDEX.md`, determine the work namespace (user-named 업무/project slug, else the current repository name, else ask one concise question or use `inbox`), load only relevant notes from `work/<work-slug>/` plus global notes, and create a feature note for the request if none exists — prefer the bundled helper (`python3 <skill-dir>/scripts/memory_note.py`; use `${CLAUDE_PLUGIN_ROOT}/skills/team-pl-orchestrator` when `<skill-dir>` is unclear).
+- No config yet: onboarding — ask one question (Obsidian vault, local markdown / Notion, official MCP), follow the Onboarding section of the chosen adapter reference, then save answers with `pl_user_config.py … init`.
+- `backend: obsidian` → follow `references/memory-obsidian.md` only.
+- `backend: notion` → follow `references/memory-notion.md` only.
 
-After each completed task wave, update the feature note so it stays a recovery ledger across compaction or session interruption. Before closing, record role discussion summaries, decisions, task outcomes, implementation summary, changed files, fresh verification evidence, teammate lifecycle events, and open questions, and create or update decision notes under `work/<work-slug>/decisions/` for durable choices. Keep raw debate, secrets, credentials, and unbounded command output out of durable memory. Run `python3 <skill-dir>/scripts/memory_note.py check` when memory links or indexes changed.
+Both adapters implement one contract: recall relevant context, ensure the work namespace, create the feature note, update its ledger after each completed task wave, record durable decisions, and run the adapter integrity check before closing. Note sections and status vocabulary are identical across backends; `references/memory-templates.md` is the single source for note structure. Work-namespace selection: user-named 업무/project slug, else the current repository name, else ask one concise question or use `inbox`.
+
+Keep raw debate, secrets, credentials, and unbounded command output out of durable memory. The feature note is the recovery ledger across compaction or session interruption.
+
+If a backend write fails mid-work, save the note content under `${CLAUDE_PLUGIN_DATA}/pending/` as markdown, report the failure, and close as `done-with-risks`. On the next run, replay a non-empty `pending/` into the backend as an upsert (update the page or file if it already exists) before starting new work.
 
 ## References
 
@@ -37,7 +43,9 @@ Each reference is the single source for its topic; do not restate its rules else
 
 - `references/roles.md` — role selection, name mapping, model and tool policy, spawn timing, `team-pl-*` namespace and collision handling, and the role prompt contract. Read it before spawning anyone.
 - `references/debate-protocol.md` — the discussion and synthesis loop.
-- `references/memory-templates.md` — memory layout, templates, and helper usage.
+- `references/memory-templates.md` — backend-neutral note structure and templates.
+- `references/memory-obsidian.md` — Obsidian adapter: vault layout, helper commands, onboarding.
+- `references/memory-notion.md` — Notion adapter: database model, MCP procedures, onboarding.
 - `references/external-benchmarking.md` — only when improving, auditing, or redesigning this team-agent operating system itself.
 
 ## Platform Behavior
@@ -133,7 +141,7 @@ Do not rely on `/model` or later prompts to repair a wrong-model teammate. Check
 
 3. Start the feature note
    - Use the selected work namespace.
-   - Initialize missing work namespaces with `python3 <skill-dir>/scripts/memory_note.py init-work <work-slug> --repo <repo-path>`.
+   - Initialize missing work namespaces with the adapter's ensure-work procedure.
    - Create or update the feature note before implementation.
    - Record request, scope, selected roles, assumptions, and planned discussion rounds.
    - Use the feature slug as the prefix for every shared task created for this request.
@@ -196,4 +204,5 @@ After changing this system, run:
 
 - `python3 "${CLAUDE_PLUGIN_ROOT}/skills/team-pl-orchestrator/scripts/test_pl_config.py"`
 - `python3 "${CLAUDE_PLUGIN_ROOT}/skills/team-pl-orchestrator/scripts/test_memory_note.py"`
-- `python3 "${CLAUDE_PLUGIN_ROOT}/skills/team-pl-orchestrator/scripts/memory_note.py" check`
+- `python3 "${CLAUDE_PLUGIN_ROOT}/skills/team-pl-orchestrator/scripts/test_pl_user_config.py"`
+- `python3 "${CLAUDE_PLUGIN_ROOT}/skills/team-pl-orchestrator/scripts/memory_note.py" --root <vault-root> check` (obsidian backend only)

@@ -205,7 +205,9 @@ class PlConfigTests(unittest.TestCase):
         # policy lives only in roles.md.
         self.assertNotIn("## Model Policy", orchestrator_text)
         self.assertIn("## Teammate Health and Restart", orchestrator_text)
-        self.assertLess(len(orchestrator_text.split()), 2800)
+        # Budget raised 2800 -> 3000 when the memory section became
+        # backend-neutral (adapter pointers + pending-queue rule).
+        self.assertLess(len(orchestrator_text.split()), 3000)
 
         # Delivery/triage contracts must live in the orchestrator itself, not
         # drift into the thin /pl alias.
@@ -260,7 +262,13 @@ class PlConfigTests(unittest.TestCase):
 
         references = SKILL_DIR / "references"
         self.assertEqual(
-            {"roles.md", "debate-protocol.md", "memory-templates.md", "external-benchmarking.md"},
+            {
+                "roles.md",
+                "debate-protocol.md",
+                "memory-templates.md",
+                "external-benchmarking.md",
+                "memory-obsidian.md",
+            },
             {path.name for path in references.glob("*.md")},
         )
         roles_text = (references / "roles.md").read_text(encoding="utf-8")
