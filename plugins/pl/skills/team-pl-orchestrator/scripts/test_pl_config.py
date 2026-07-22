@@ -302,11 +302,13 @@ class PlConfigTests(unittest.TestCase):
         if not ZSHRC.exists():
             self.skipTest("machine-specific: ~/.zshrc not present")
         zshrc_text = ZSHRC.read_text(encoding="utf-8")
-        self.assertRegex(
-            zshrc_text,
-            r'(?m)^alias cct=["\']cmux claude-teams --model opus'
-            r'( --effort (low|medium|high|xhigh|max))? --permission-mode auto["\']$',
-        )
+        # cct alias is optional since the cmux->orca launcher transition (2026-07-21).
+        if "alias cct=" in zshrc_text:
+            self.assertRegex(
+                zshrc_text,
+                r'(?m)^alias cct=["\']cmux claude-teams --model opus'
+                r'( --effort (low|medium|high|xhigh|max))? --permission-mode auto["\']$',
+            )
         self.assertNotIn("CLAUDE_CODE_SUBAGENT_MODEL", zshrc_text)
         self.assertIsNone(os.environ.get("CLAUDE_CODE_SUBAGENT_MODEL"))
 
