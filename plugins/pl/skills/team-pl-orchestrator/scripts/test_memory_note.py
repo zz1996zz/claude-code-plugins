@@ -362,6 +362,15 @@ class MemoryNoteTests(unittest.TestCase):
         self.assertNotIn("\nFeatures:\n", index)
         self.assertNotIn("\nDecisions:\n", index)
 
+    def test_root_flag_is_required(self) -> None:
+        result = subprocess.run(
+            ["python3", str(SCRIPT), "check"],
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(2, result.returncode)
+        self.assertIn("--root", result.stderr)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
