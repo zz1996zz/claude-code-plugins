@@ -9,7 +9,7 @@ Use this adapter only when the user config says `backend: notion`. Notion is the
 3. Fetch the root page to confirm access.
 4. Create two databases under the root page (skip any that already exist):
    - **Features** — properties: `Title` (title), `Status` (select: `in-progress`, `done`, `done-with-risks`, `blocked`), `Date` (date), `Owner` (text), `Work` (select), `Repo` (text), `Decisions` (relation → Decisions).
-   - **Decisions** — properties: `Title` (title), `Status` (select: `accepted`, `superseded`), `Date` (date), `Work` (select), `Feature` (relation → Features), `Supersedes` (relation → Decisions, self).
+   - **Decisions** — properties: `Title` (title), `Status` (select: `accepted`, `superseded`), `Date` (date), `Owner` (text), `Work` (select), `Feature` (relation → Features), `Supersedes` (relation → Decisions, self).
    If the MCP tools cannot create a property type (e.g. relation), create what is possible, then give the user exact manual steps for the rest and wait.
 5. Create a `Works` child page under the root page (holds one architecture subpage per work namespace).
 6. Save: `python3 "${CLAUDE_PLUGIN_ROOT}/skills/team-pl-orchestrator/scripts/pl_user_config.py" --config "${CLAUDE_PLUGIN_DATA}/config.json" init --backend notion --notion-root-page <url>`

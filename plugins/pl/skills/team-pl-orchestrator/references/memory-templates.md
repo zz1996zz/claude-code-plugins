@@ -8,6 +8,7 @@ Use these templates in the configured memory backend (see the adapter references
 - Workspace Layout
 - Feature Note
 - Decision Note
+- Architecture Note
 
 ## Note Format
 
@@ -200,4 +201,25 @@ Negative:
 ## Open Questions
 
 - 
+```
+
+## Architecture Note
+
+Path (Obsidian): `work/<work-slug>/architecture/README.md` — `memory_note.py init-work` creates it automatically, embedding this same structure. Notion: the `Works/<work-slug>` page content.
+
+```markdown
+# Architecture: <work-slug>
+
+Status: draft
+Owner: PL agent
+
+## Summary
+
+## Current Shape
+
+## Important Constraints
+
+## Common Change Points
+
+## Verification Notes
 ```
