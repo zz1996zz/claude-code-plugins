@@ -268,6 +268,7 @@ class PlConfigTests(unittest.TestCase):
                 "memory-templates.md",
                 "external-benchmarking.md",
                 "memory-obsidian.md",
+                "memory-notion.md",
             },
             {path.name for path in references.glob("*.md")},
         )
