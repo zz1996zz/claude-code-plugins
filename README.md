@@ -7,6 +7,7 @@
 ![marketplace](https://img.shields.io/badge/marketplace-zz1996zz-181717?logo=github)
 ![plugins](https://img.shields.io/badge/plugins-1-blue)
 ![Claude Code](https://img.shields.io/badge/Claude%20Code-plugin%20marketplace-d97757)
+![license](https://img.shields.io/badge/license-MIT-green)
 
 팀 워크플로우를 플러그인으로 패키징해 배포합니다.
 설치 두 커맨드면 어느 PC에서든 같은 환경이 됩니다.
