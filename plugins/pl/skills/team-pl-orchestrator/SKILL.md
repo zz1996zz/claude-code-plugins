@@ -66,7 +66,7 @@ Do not substitute a dynamic `Workflow` or `ultracode` run for the required PL Ag
    - Create and assign shared tasks before each teammate begins role work, preferably before spawn. Every task needs one owner, dependencies, a bounded deliverable, success criteria, file ownership when edits are allowed, and a `Run:` verification command when a runnable check decides completion.
    - Include the delivery contract in every spawn brief: the teammate must send its memo to the lead with `SendMessage` and settle its owned task before going idle, because turn-ending text and idle notifications alone deliver no result content.
    - If no split appears, check the shared task list and the team config members, and ask the user whether the in-process agent panel is visible. A visible panel means the team is active in-process; only use the fallback when no panes, panel, or team tasks exist.
-2. Claude Code without Agent Teams: do not silently downgrade to ordinary subagents. Report that live teammate discussion and panes are unavailable and ask the user to relaunch through `cct`; continue with labeled lead-only role passes only if the user explicitly accepts that fallback.
+2. Claude Code without Agent Teams: do not silently downgrade to ordinary subagents. Report that live teammate discussion and panes are unavailable and ask the user to relaunch with Agent Teams enabled (their team launcher); continue with labeled lead-only role passes only if the user explicitly accepts that fallback.
 3. If the user accepts the lead-only fallback, record it in the feature note and label each role pass. Do not imply that peer sessions or direct teammate debate occurred.
 
 Do not require all roles for every task. Keep the team small enough to reduce coordination cost.
