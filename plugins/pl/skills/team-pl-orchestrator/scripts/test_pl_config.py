@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import unittest
 from pathlib import Path
 
@@ -328,10 +329,17 @@ class PlConfigTests(unittest.TestCase):
     def test_no_machine_specific_paths(self) -> None:
         # Exclude this test file itself: its own assertion below necessarily
         # embeds the literal marker string it checks for in every other file.
+        # Any user home path (macOS/Linux) is machine-specific; also catch the
+        # current runner's home for exotic layouts.
+        machine_path = re.compile(r"/(?:Users|home)/[A-Za-z0-9._-]+")
+        home = str(Path.home())
         self_path = Path(__file__).resolve()
         for path in sorted(SKILL_DIR.rglob("*")) + sorted(AGENTS_DIR.glob("*.md")) + [PL_SKILL]:
             if path.is_file() and path.suffix in {".md", ".py"} and path.resolve() != self_path:
-                self.assertNotIn("/Users/chris", path.read_text(encoding="utf-8"), path)
+                text = path.read_text(encoding="utf-8")
+                found = machine_path.search(text)
+                self.assertIsNone(found, f"{path}: {found.group(0) if found else ''}")
+                self.assertNotIn(home, text, path)
 
 
 if __name__ == "__main__":
