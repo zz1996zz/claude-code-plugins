@@ -31,7 +31,7 @@ Durable memory lives in the user-selected backend. Before feature work, load the
 - `backend: obsidian` → follow `references/memory-obsidian.md` only.
 - `backend: notion` → follow `references/memory-notion.md` only.
 
-Both adapters implement one contract: recall relevant context, ensure the work namespace, create the feature note, update its ledger after each completed task wave, record durable decisions, and run the adapter integrity check before closing. Note sections and status vocabulary are identical across backends; `references/memory-templates.md` is the single source for note structure. Work-namespace selection: user-named 업무/project slug, else the current repository name, else ask one concise question or use `inbox`.
+Both adapters implement one contract: recall relevant context, ensure the work namespace, create the feature note, update its ledger after each completed task wave, record durable decisions, and run the adapter integrity check before closing. Note sections and status vocabulary are identical across backends; `references/memory-templates.md` is the single source for note structure. Work-namespace selection: user-named 업무/project slug, else the canonical repository name resolved per `references/memory-templates.md` (a worktree or workspace checkout maps to its main repository, never the directory name), else ask one concise question or use `inbox`.
 
 Keep raw debate, secrets, credentials, and unbounded command output out of durable memory. The feature note is the recovery ledger across compaction or session interruption.
 
