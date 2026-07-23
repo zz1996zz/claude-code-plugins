@@ -1,0 +1,67 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    name: 매니페스트·테스트 검증
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - name: JSON 매니페스트 검증
+        run: |
+          python3 - <<'EOF'
+          import json
+          for f in (
+              ".claude-plugin/marketplace.json",
+              "plugins/pl/.claude-plugin/plugin.json",
+              "plugins/pl/.mcp.json",
+          ):
+              json.load(open(f))
+              print(f, "OK")
+          EOF
+      - name: 테스트 스위트 3종
+        run: |
+          S=plugins/pl/skills/team-pl-orchestrator/scripts
+          python3 "$S/test_pl_config.py"
+          python3 "$S/test_memory_note.py"
+          python3 "$S/test_pl_user_config.py"
+
+  version-guard:
+    name: plugins/ 변경 시 버전 범프 강제
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: 버전 범프 확인
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          # 설치 캐시가 버전 키라서, plugins/ 내용이 바뀌었는데 버전이 그대로면
+          # 설치 사용자에게 변경이 전파되지 않는다. 이를 CI에서 강제한다.
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            BASE="$PR_BASE_SHA"
+          else
+            BASE=$(git rev-parse HEAD~1 2>/dev/null || true)
+          fi
+          if [ -z "$BASE" ]; then echo "기준 커밋 없음 — 통과"; exit 0; fi
+          CHANGED=$(git diff --name-only "$BASE" HEAD -- plugins/ || true)
+          if [ -z "$CHANGED" ]; then echo "plugins/ 변경 없음 — 통과"; exit 0; fi
+          OLD=$(git show "$BASE:plugins/pl/.claude-plugin/plugin.json" 2>/dev/null \
+            | python3 -c "import json,sys;print(json.load(sys.stdin).get('version',''))" || echo "")
+          NEW=$(python3 -c "import json;print(json.load(open('plugins/pl/.claude-plugin/plugin.json'))['version'])")
+          echo "plugins/ 변경 파일:"; echo "$CHANGED"
+          echo "version: ${OLD:-\(없음\)} -> $NEW"
+          if [ "$OLD" = "$NEW" ]; then
+            echo "::error::plugins/ 내용이 변경되었지만 plugin.json 버전이 그대로입니다 — 버전을 범프해야 설치 사용자에게 전파됩니다."
+            exit 1
+          fi
+          echo "버전 범프 확인됨 — 통과"
