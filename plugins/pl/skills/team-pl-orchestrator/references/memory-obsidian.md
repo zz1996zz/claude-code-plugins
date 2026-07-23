@@ -21,4 +21,5 @@ The helper enforces the status vocabulary, slug rules, index sync, and link vali
 
 ## Pending replay
 
+When writing a pending file for this backend, set its frontmatter target line to the vault-relative path, e.g. `target: obsidian:work/<work-slug>/features/<file>.md`.
 When replaying `${CLAUDE_PLUGIN_DATA}/pending/*.md` into this backend, write each note to its target path (recorded in the pending file's frontmatter `target:` line) only after comparing content; if the target already exists, merge section-by-section instead of overwriting newer content.

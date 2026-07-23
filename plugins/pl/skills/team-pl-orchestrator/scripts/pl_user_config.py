@@ -20,6 +20,8 @@ def validate(data: dict) -> dict:
         if not root or not str(root).strip():
             raise ValueError("obsidian.root is required for the obsidian backend")
         data["obsidian"]["root"] = str(Path(str(root)).expanduser())
+        if not Path(data["obsidian"]["root"]).is_absolute():
+            raise ValueError("obsidian.root must be an absolute path")
     else:
         page = (data.get("notion") or {}).get("rootPage")
         if not page or not str(page).strip():
@@ -41,7 +43,9 @@ def cmd_show(args: argparse.Namespace) -> int:
 def cmd_init(args: argparse.Namespace) -> int:
     data: dict = {"backend": args.backend}
     if args.backend == "obsidian":
-        data["obsidian"] = {"root": args.obsidian_root or ""}
+        data["obsidian"] = {
+            "root": str(Path(args.obsidian_root).expanduser().resolve()) if args.obsidian_root else ""
+        }
     else:
         data["notion"] = {"rootPage": args.notion_root_page or ""}
     validate(data)
@@ -70,7 +74,7 @@ def main() -> int:
     args = build_parser().parse_args()
     try:
         return args.func(args)
-    except (FileNotFoundError, ValueError, json.JSONDecodeError) as exc:
+    except (FileNotFoundError, ValueError, json.JSONDecodeError, AttributeError, TypeError) as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 2
 

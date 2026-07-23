@@ -28,7 +28,7 @@ Before making a material system change:
 
 ## Seed Repositories
 
-Use current search results rather than treating this list as exhaustive. The full inspected-repository provenance (URL, commit SHA, inspection date, adopted/rejected patterns — 73 unique repositories as of 2026-07) lives in the `claude-team-pl` decision notes in the Obsidian memory.
+Use current search results rather than treating this list as exhaustive. The full inspected-repository provenance (URL, commit SHA, inspection date, adopted/rejected patterns — 73 unique repositories as of 2026-07) lives in the maintainer's memory backend (claude-team-pl work namespace).
 
 - `anthropics/claude-code`: authoritative changelog for runtime contracts and removed tools.
 - `anthropics/skills`: official Agent Skills examples and marketplace packaging.

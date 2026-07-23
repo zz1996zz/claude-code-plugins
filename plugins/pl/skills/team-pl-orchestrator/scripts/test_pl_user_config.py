@@ -60,6 +60,32 @@ class PlUserConfigTests(unittest.TestCase):
         self.assertEqual(2, result.returncode)
         self.assertIn("obsidian.root is required", result.stderr)
 
+    def test_init_resolves_relative_root_to_absolute(self) -> None:
+        result = self.run_cli("init", "--backend", "obsidian", "--obsidian-root", "vault")
+        self.assertEqual(0, result.returncode, result.stderr)
+        data = json.loads(self.config.read_text(encoding="utf-8"))
+        self.assertTrue(data["obsidian"]["root"].startswith("/"))
+
+    def test_show_rejects_relative_root_in_config(self) -> None:
+        self.config.parent.mkdir(parents=True, exist_ok=True)
+        self.config.write_text(
+            json.dumps({"backend": "obsidian", "obsidian": {"root": "vault"}}),
+            encoding="utf-8",
+        )
+        result = self.run_cli("show")
+        self.assertEqual(2, result.returncode)
+        self.assertIn("absolute", result.stderr)
+
+    def test_malformed_config_shape_exits_cleanly(self) -> None:
+        self.config.parent.mkdir(parents=True, exist_ok=True)
+        self.config.write_text(
+            json.dumps({"backend": "obsidian", "obsidian": "vault"}), encoding="utf-8"
+        )
+        result = self.run_cli("show")
+        self.assertEqual(2, result.returncode)
+        self.assertIn("error:", result.stderr)
+        self.assertNotIn("Traceback", result.stderr)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

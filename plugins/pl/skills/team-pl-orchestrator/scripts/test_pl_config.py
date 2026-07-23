@@ -308,6 +308,8 @@ class PlConfigTests(unittest.TestCase):
         self.assertNotIn("Each memo must include:", debate_text)
 
     def test_launch_alias_and_model_override_policy(self) -> None:
+        if os.environ.get("PL_SKIP_MACHINE_TESTS"):
+            self.skipTest("PL_SKIP_MACHINE_TESTS set")
         if not ZSHRC.exists():
             self.skipTest("machine-specific: ~/.zshrc not present")
         zshrc_text = ZSHRC.read_text(encoding="utf-8")
