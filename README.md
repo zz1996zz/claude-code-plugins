@@ -24,8 +24,6 @@
 
 ## 설치
 
-> **전제조건**: 이 레포는 private입니다. GitHub 계정이 collaborator로 초대돼 있고, git 자격증명(HTTPS 또는 SSH)이 설정돼 있어야 합니다.
-
 ```
 /plugin marketplace add zz1996zz/claude-code-plugins
 /plugin install <플러그인 이름>@zz1996zz
