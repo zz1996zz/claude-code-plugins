@@ -25,6 +25,8 @@ Notion 선택 시 root 페이지 아래 Features/Decisions 데이터베이스와
 
 플러그인 콘텐츠 변경이 있어도 plugin.json 버전이 그대로면 업데이트가 감지되지 않는다 — 배포 시 반드시 버전을 올린다 (운영자 주의사항).
 
+**주의**: `plugin uninstall`은 `${CLAUDE_PLUGIN_DATA}`(백엔드 설정 `config.json`·미반영 `pending/` 큐)를 함께 삭제한다(실측). 재설치가 아니라 버전 범프 + update 경로로 갱신해야 사용자 데이터가 보존된다. 부득이 uninstall 할 때는 `~/.claude/plugins/data/pl-zz1996zz/`를 먼저 백업할 것.
+
 ## 개발
 
 - 스킬 시스템 변경 후: `plugins/pl/skills/team-pl-orchestrator/scripts/`의 `test_pl_config.py`, `test_memory_note.py`, `test_pl_user_config.py` 3종을 실행한다.
