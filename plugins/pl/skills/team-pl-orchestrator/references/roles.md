@@ -60,7 +60,7 @@ Use only Sonnet and Opus. Do not use Haiku. Do not create separate `*-opus` role
 
 ## Tool Policy
 
-- Every role allowlist explicitly includes the team coordination tools (`SendMessage`, `TaskList`, `TaskGet`, `TaskUpdate`). Despite official docs, a role `tools` allowlist strips the team coordination tools in this environment (verified 2026-07-14, Claude Code 2.1.208 + cmux); without them a teammate cannot deliver its memo, settle its task, or answer a shutdown request.
+- Every role allowlist explicitly includes the team coordination tools (`SendMessage`, `TaskList`, `TaskGet`, `TaskUpdate`). Despite official docs, a role `tools` allowlist strips the team coordination tools in this environment (verified 2026-07-14, Claude Code 2.1.208); without them a teammate cannot deliver its memo, settle its task, or answer a shutdown request.
 - Read-only roles: product analyst, architect, security reviewer, and integration reviewer have no edit tools.
 - Code reviewer has Bash only for read-only git inspection and safe verification commands; it must never mutate files or repository state.
 - Verification role: QA may run safe verification commands but must not edit files.

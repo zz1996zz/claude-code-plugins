@@ -16,7 +16,7 @@ AGENTS_DIR = CLAUDE_DIR / "agents"
 PL_SKILL = CLAUDE_DIR / "skills" / "pl" / "SKILL.md"
 ZSHRC = Path.home() / ".zshrc"
 
-# Verified 2026-07-14 (Claude Code 2.1.208 + cmux): a role `tools` allowlist
+# Verified 2026-07-14 (Claude Code 2.1.208): a role `tools` allowlist
 # strips the team coordination tools too, despite official docs saying they
 # are always available. Every role must therefore list them explicitly or
 # the teammate cannot deliver results, settle tasks, or answer shutdown.
@@ -313,13 +313,6 @@ class PlConfigTests(unittest.TestCase):
         if not ZSHRC.exists():
             self.skipTest("machine-specific: ~/.zshrc not present")
         zshrc_text = ZSHRC.read_text(encoding="utf-8")
-        # cct alias is optional since the cmux->orca launcher transition (2026-07-21).
-        if "alias cct=" in zshrc_text:
-            self.assertRegex(
-                zshrc_text,
-                r'(?m)^alias cct=["\']cmux claude-teams --model opus'
-                r'( --effort (low|medium|high|xhigh|max))? --permission-mode auto["\']$',
-            )
         self.assertNotIn("CLAUDE_CODE_SUBAGENT_MODEL", zshrc_text)
         self.assertIsNone(os.environ.get("CLAUDE_CODE_SUBAGENT_MODEL"))
 

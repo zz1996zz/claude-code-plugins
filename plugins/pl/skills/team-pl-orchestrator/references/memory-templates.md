@@ -34,7 +34,7 @@ Store new work under a 업무/project namespace (path shown for the Obsidian bac
 
 Selection rule:
 - If the user names a 업무/project/product, slugify that name.
-- Otherwise use the canonical repository name: the basename of `git remote get-url origin` with any `.git` suffix removed. With no remote, use the main repository directory name (resolve `git rev-parse --git-common-dir` to the repository root) — never the worktree or workspace directory name; launchers such as orca run sessions in renamed worktrees. Outside a git repository, treat the namespace as unclear.
+- Otherwise use the canonical repository name: the basename of `git remote get-url origin` with any `.git` suffix removed. With no remote, use the main repository directory name (resolve `git rev-parse --git-common-dir` to the repository root) — never the worktree or workspace directory name; some launchers run sessions in renamed worktrees. Outside a git repository, treat the namespace as unclear.
 - If neither is clear, use `inbox` only as a temporary namespace and record why.
 
 Never put unrelated 업무 A and 업무 B in the same feature note or decision folder.

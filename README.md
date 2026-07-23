@@ -47,11 +47,7 @@
 ```
 claude-code-plugins/
 ├── .claude-plugin/marketplace.json   # 마켓플레이스 정의
-├── plugins/<이름>/                    # 각 플러그인 (자체 README 포함)
-└── docs/
-    ├── specs/                        # 설계 문서
-    ├── plans/                        # 구현 계획
-    └── history/                      # 작업 히스토리
+└── plugins/<이름>/                    # 각 플러그인 (자체 README 포함)
 ```
 
 ## 배포 수칙 (관리자)
