@@ -1,43 +1,61 @@
+<div align="center">
+
 # claude-code-plugins
 
-개인 운영 Claude Code 플러그인 마켓플레이스. 현재 플러그인: **pl** — PL/테크리드 팀 오케스트레이션.
+**JeongSu의 개인 Claude Code 플러그인 마켓플레이스**
+
+![marketplace](https://img.shields.io/badge/marketplace-zz1996zz-181717?logo=github)
+![plugins](https://img.shields.io/badge/plugins-1-blue)
+![Claude Code](https://img.shields.io/badge/Claude%20Code-plugin%20marketplace-d97757)
+
+팀 워크플로우를 플러그인으로 패키징해 배포합니다.
+설치 두 커맨드면 어느 PC에서든 같은 환경이 됩니다.
+
+</div>
+
+---
+
+## 플러그인 목록
+
+| 플러그인 | 설명 | 문서 |
+|---|---|---|
+| **[pl](plugins/pl/README.md)** | PL/테크리드 팀 오케스트레이션 — 역할 에이전트 토론·구현·검증, Obsidian/Notion 선택형 메모리 | [README](plugins/pl/README.md) |
 
 ## 설치
 
-전제조건: macOS/Linux + `python3` 3.10 이상 (Obsidian 백엔드의 헬퍼 스크립트가 Unix 전용 잠금(fcntl)을 사용한다. Windows는 미지원).
+> **전제조건**: 이 레포는 private입니다. GitHub 계정이 collaborator로 초대돼 있고, git 자격증명(HTTPS 또는 SSH)이 설정돼 있어야 합니다.
 
-1. `/plugin marketplace add zz1996zz/claude-code-plugins`
-2. `/plugin install pl@zz1996zz`
-3. 메모리가 필요한 최초의 기능 작업에서 온보딩이 시작된다 (오탈자 점검 같은 routine 요청은 메모리를 쓰지 않으므로 온보딩이 나오지 않는다).
+```
+/plugin marketplace add zz1996zz/claude-code-plugins
+/plugin install <플러그인 이름>@zz1996zz
+```
 
-private 레포이므로 GitHub 계정이 이 레포에 초대돼 있어야 하고, git 자격증명(HTTPS 또는 SSH)이 설정돼 있어야 한다.
-
-## 사용
-
-`/pl:pl <기능 요청>` 으로 호출한다. 예: `/pl:pl 주문 취소 API에 부분 취소 지원 추가`
-routine한 요청(오탈자 점검 등)은 솔로 패스로 처리되고, 기능 작업이면 역할 팀 구성·토론·구현·검증·메모리 기록까지 진행된다.
-
-## 메모리 백엔드 선택 (온보딩 1회)
-
-| 선택지 | 준비물 | 온보딩에서 할 일 |
-|---|---|---|
-| Obsidian vault (로컬 markdown) | 없음 (Obsidian 앱 불필요) | 저장 경로 1개 답하기 |
-| Notion (공식 MCP) | Notion 계정 | `/mcp`에서 Notion OAuth 1회 + 메모리 root 페이지 URL 붙여넣기 |
-
-Obsidian 백엔드만 쓸 경우 동봉된 Notion MCP 서버는 사용되지 않으므로, 원하면 `/mcp` 에서 `notion` 서버를 비활성화해도 된다.
-
-Notion 선택 시 root 페이지 아래 Features/Decisions 데이터베이스와 Works 페이지가 자동 생성된다. 백엔드는 이후 `${CLAUDE_PLUGIN_DATA}/config.json` 삭제 후 재온보딩으로 바꿀 수 있다 (기존 데이터 이관은 미지원).
+각 플러그인의 사용법·요구사항은 해당 플러그인 README를 참조하세요.
 
 ## 업데이트
 
-`/plugin marketplace update zz1996zz` (사설 마켓플레이스는 자동 업데이트가 기본 꺼짐).
+```
+/plugin marketplace update zz1996zz
+/plugin update <플러그인 이름>@zz1996zz
+```
 
-플러그인 콘텐츠 변경이 있어도 plugin.json 버전이 그대로면 업데이트가 감지되지 않는다 — 배포 시 반드시 버전을 올린다 (운영자 주의사항).
+- 사설 마켓플레이스는 자동 업데이트가 기본으로 꺼져 있습니다 — 위 두 커맨드로 직접 당겨옵니다.
+- **⚠️ `plugin uninstall` 주의**: 플러그인의 사용자 데이터 디렉토리(`~/.claude/plugins/data/<플러그인>-zz1996zz/` — 설정·대기 큐)가 함께 삭제됩니다(실측). 갱신은 반드시 위의 update 경로로 하고, 부득이 uninstall 할 때는 데이터 디렉토리를 먼저 백업하세요.
 
-**주의**: `plugin uninstall`은 `${CLAUDE_PLUGIN_DATA}`(백엔드 설정 `config.json`·미반영 `pending/` 큐)를 함께 삭제한다(실측). 재설치가 아니라 버전 범프 + update 경로로 갱신해야 사용자 데이터가 보존된다. 부득이 uninstall 할 때는 `~/.claude/plugins/data/pl-zz1996zz/`를 먼저 백업할 것.
+## 레포 구조
 
-## 개발
+```
+claude-code-plugins/
+├── .claude-plugin/marketplace.json   # 마켓플레이스 정의
+├── plugins/<이름>/                    # 각 플러그인 (자체 README 포함)
+└── docs/
+    ├── specs/                        # 설계 문서
+    ├── plans/                        # 구현 계획
+    └── history/                      # 작업 히스토리
+```
 
-- 스킬 시스템 변경 후: `plugins/pl/skills/team-pl-orchestrator/scripts/`의 `test_pl_config.py`, `test_memory_note.py`, `test_pl_user_config.py` 3종을 실행한다.
-- 배포(push) 전 plugin.json의 version을 범프한다 — 설치 캐시가 버전 키라 버전이 같으면 팀원에게 변경이 전파되지 않는다.
-- 설계 문서: `docs/specs/`, 구현 계획: `docs/plans/`.
+## 배포 수칙 (관리자)
+
+- **배포(push) 전 `plugin.json`의 `version`을 반드시 범프**합니다 — 설치 캐시가 버전 키라서, 버전이 같으면 콘텐츠가 바뀌어도 사용자에게 전파되지 않습니다(실측).
+- 버전 범프 시 해당 플러그인 README의 버전 배지도 함께 갱신합니다.
+- 커밋·문서는 한국어, Conventional Commits를 따릅니다.
