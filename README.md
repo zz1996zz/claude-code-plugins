@@ -1,0 +1,32 @@
+# claude-code-plugins
+
+개인 운영 Claude Code 플러그인 마켓플레이스. 현재 플러그인: **pl** — PL/테크리드 팀 오케스트레이션.
+
+## 설치
+
+1. `/plugin marketplace add zz1996zz/claude-code-plugins`
+2. `/plugin install pl@zz1996zz`
+3. 최초 `/pl:pl` 실행 시 온보딩이 시작된다.
+
+private 레포이므로 GitHub 계정이 이 레포에 초대돼 있어야 하고, git 자격증명(HTTPS 또는 SSH)이 설정돼 있어야 한다.
+
+## 메모리 백엔드 선택 (온보딩 1회)
+
+| 선택지 | 준비물 | 온보딩에서 할 일 |
+|---|---|---|
+| Obsidian vault (로컬 markdown) | 없음 (Obsidian 앱 불필요) | 저장 경로 1개 답하기 |
+| Notion (공식 MCP) | Notion 계정 | `/mcp`에서 Notion OAuth 1회 + 메모리 root 페이지 URL 붙여넣기 |
+
+Notion 선택 시 root 페이지 아래 Features/Decisions 데이터베이스와 Works 페이지가 자동 생성된다. 백엔드는 이후 `${CLAUDE_PLUGIN_DATA}/config.json` 삭제 후 재온보딩으로 바꿀 수 있다 (기존 데이터 이관은 미지원).
+
+## 업데이트
+
+`/plugin marketplace update zz1996zz` (사설 마켓플레이스는 자동 업데이트가 기본 꺼짐).
+
+플러그인 콘텐츠 변경이 있어도 plugin.json 버전이 그대로면 업데이트가 감지되지 않는다 — 배포 시 반드시 버전을 올린다 (운영자 주의사항).
+
+## 개발
+
+- 스킬 시스템 변경 후: `plugins/pl/skills/team-pl-orchestrator/scripts/`의 `test_pl_config.py`, `test_memory_note.py`, `test_pl_user_config.py` 3종을 실행한다.
+- 배포(push) 전 plugin.json의 version을 범프한다 — 설치 캐시가 버전 키라 버전이 같으면 팀원에게 변경이 전파되지 않는다.
+- 설계 문서: `docs/specs/`, 구현 계획: `docs/plans/`.
