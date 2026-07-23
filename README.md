@@ -6,7 +6,7 @@
 
 1. `/plugin marketplace add zz1996zz/claude-code-plugins`
 2. `/plugin install pl@zz1996zz`
-3. 최초 `/pl:pl` 실행 시 온보딩이 시작된다.
+3. 메모리가 필요한 최초의 기능 작업에서 온보딩이 시작된다 (오탈자 점검 같은 routine 요청은 메모리를 쓰지 않으므로 온보딩이 나오지 않는다).
 
 private 레포이므로 GitHub 계정이 이 레포에 초대돼 있어야 하고, git 자격증명(HTTPS 또는 SSH)이 설정돼 있어야 한다.
 
