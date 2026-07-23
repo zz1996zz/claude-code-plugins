@@ -37,11 +37,11 @@ For a replacement or a later feature in the same session, append `-r2`, `-r3`, a
 
 ## Agent Teams Only
 
-These role definitions are Agent Teams-only. Never invoke them as ordinary standalone subagents. Spawn teammates using the named definitions as agent types with explicit teammate language, for example: "Spawn a teammate named `pl-architect` using the `team-pl-architect` agent type." A generic teammate merely named `team-pl-architect` may not honor that role definition; do not spawn generic teammates when a matching role agent exists. When a named agent is unavailable, run the role as a labeled role pass in the lead context and record the fallback.
+These role definitions are Agent Teams-only. Never invoke them as ordinary standalone subagents. Spawn teammates using the named definitions as agent types with explicit teammate language, for example: "Spawn a teammate named `pl-architect` using the `pl:team-pl-architect` agent type." A generic teammate merely named `team-pl-architect` may not honor that role definition; do not spawn generic teammates when a matching role agent exists. When a named agent is unavailable, run the role as a labeled role pass in the lead context and record the fallback.
 
 ## Namespace and Collisions
 
-The `team-pl-*` namespace reduces collisions with repository-owned agents. User-level subagents rank below managed, `--agents`, and project-level definitions with the same name. Before the first spawn in a repository, inspect `.claude/agents/` from the current directory and its parents plus every `--add-dir` location for selected `team-pl-*` names, and account for visible managed or CLI overrides. Treat any collision as unavailable unless its contract is intentionally identical: do not trust the expected model, tools, or prompt contract, do not loop on same-type replacements, and use a labeled lead role pass with the fallback recorded.
+The `team-pl-*` namespace reduces collisions with repository-owned agents. User-level subagents rank below managed, `--agents`, and project-level definitions with the same name. Before the first spawn in a repository, inspect `.claude/agents/` from the current directory and its parents plus every `--add-dir` location for selected `team-pl-*` names, and account for visible managed or CLI overrides. Treat any collision as unavailable unless its contract is intentionally identical: do not trust the expected model, tools, or prompt contract, do not loop on same-type replacements, and use a labeled lead role pass with the fallback recorded. When installed as the pl plugin, these definitions resolve with the plugin namespace — spawn them as `pl:team-pl-<role>`; the un-prefixed name is used only for a non-plugin (local) installation.
 
 ## Model Policy
 

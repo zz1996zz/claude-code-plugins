@@ -162,7 +162,7 @@ class PlConfigTests(unittest.TestCase):
         self.assertEqual("pl", pl_frontmatter.get("name"))
         self.assertEqual("true", pl_frontmatter.get("disable-model-invocation"))
         self.assertEqual(
-            "Skill(team-pl-orchestrator)",
+            "Skill(pl:team-pl-orchestrator)",
             pl_frontmatter.get("allowed-tools"),
         )
         self.assertEqual("team-pl-orchestrator", orchestrator_frontmatter.get("name"))
@@ -189,7 +189,7 @@ class PlConfigTests(unittest.TestCase):
             "Do not reuse a runtime name",
             "actual app, CLI, or service path",
             "done-with-risks",
-            "invoke the hidden `team-pl-orchestrator` skill through the `Skill` tool",
+            "invoke the hidden `pl:team-pl-orchestrator` skill through the `Skill` tool",
             "Never ask a teammate to spawn teammates or background subagents",
             "use `TaskStop` by teammate name as a force-stop fallback",
             "namespaced `team-pl-*` agent types",
