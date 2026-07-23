@@ -4,7 +4,7 @@
 
 **`/pl:pl` 한 번으로 역할 에이전트 팀이 토론하고, 구현하고, 검증하고, 결정을 기억합니다**
 
-![version](https://img.shields.io/badge/version-0.1.3-blue)
+![version](https://img.shields.io/badge/version-0.1.4-blue)
 ![platform](https://img.shields.io/badge/platform-macOS%20%7C%20Linux-lightgrey?logo=apple)
 ![memory](https://img.shields.io/badge/memory-Obsidian%20%7C%20Notion-7c3aed)
 ![agents](https://img.shields.io/badge/role%20agents-9-success)
@@ -74,6 +74,19 @@ flowchart LR
 - 백엔드 변경: `${CLAUDE_PLUGIN_DATA}/config.json` 삭제 후 재온보딩 (기존 데이터 이관은 미지원).
 - Obsidian만 쓸 경우 동봉된 Notion MCP 서버는 사용되지 않으므로 `/mcp`에서 `notion` 서버를 비활성화해도 됩니다.
 - Notion 쓰기 실패 시 기록은 `${CLAUDE_PLUGIN_DATA}/pending/`에 보존됐다가 다음 실행에서 업서트로 재반영됩니다 — 조용한 유실이 없습니다.
+
+## 추천 조합 (선택)
+
+pl은 단독으로 완결이지만, 아래 공식 플러그인들과 자연스럽게 합성됩니다. 설치는 각자 선택이고 — **없으면 pl이 자동으로 무시합니다** (조건부 참조라 에러·기능 저하 없음).
+
+| 플러그인 | 합성 효과 |
+|---|---|
+| `security-guidance` | 편집·커밋 시 자동 보안 경고 훅 — pl 팀원의 구현 편집에도 그대로 적용 |
+| `context7` | 라이브러리 버전별 최신 문서 MCP — 설치돼 있으면 pl 역할들이 필요 시 활용 |
+| `commit-commands` | 커밋 유틸 커맨드 (pl과 직교; auto-push 커맨드는 팀 규칙과 맞는지 확인 후 사용) |
+| `claude-md-management` | CLAUDE.md 품질 관리 (pl과 직교) |
+
+설치: `/plugin install <이름>@claude-plugins-official`
 
 ## 업데이트
 

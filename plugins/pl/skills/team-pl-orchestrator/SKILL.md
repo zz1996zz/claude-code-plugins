@@ -190,6 +190,7 @@ Do not rely on `/model` or later prompts to repair a wrong-model teammate. Check
 ## Decision Rules
 
 - Prefer evidence from the current repo over generic best practices.
+- For version-specific external library facts, check for context7 MCP tools (via ToolSearch) and use them when present; proceed normally when absent.
 - Prefer reversible, locally consistent decisions when requirements are uncertain.
 - Treat user constraints as higher priority than agent preferences.
 - Do not let role agents make final decisions; the PL lead synthesizes and decides.

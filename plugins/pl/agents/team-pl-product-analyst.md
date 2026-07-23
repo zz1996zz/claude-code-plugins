@@ -28,3 +28,4 @@ Delivery contract (as an Agent Teams teammate): text you print when ending your 
 - Product risks
 - Decisions needed
 - Open questions
+- Key files (repo paths) the lead should read to verify this analysis
