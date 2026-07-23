@@ -31,7 +31,7 @@ Durable memory lives in the user-selected backend. Before feature work, load the
 - `backend: obsidian` → follow `references/memory-obsidian.md` only.
 - `backend: notion` → follow `references/memory-notion.md` only.
 
-Both adapters implement one contract: recall relevant context, ensure the work namespace, create the feature note, update its ledger after each completed task wave, record durable decisions, and run the adapter integrity check before closing. Note sections and status vocabulary are identical across backends; `references/memory-templates.md` is the single source for note structure. Work-namespace selection: user-named 업무/project slug, else the canonical repository name resolved per `references/memory-templates.md` (a worktree or workspace checkout maps to its main repository, never the directory name), else ask one concise question or use `inbox`.
+Both adapters implement one contract: recall relevant context, ensure the work namespace, create the feature note, update its ledger after each completed task wave, record durable decisions, and run the adapter integrity check before closing. Note sections and status vocabulary are identical across backends; `references/memory-templates.md` is the single source for note structure and work-namespace selection (user-named slug, else the canonical repository name — never the worktree/directory name — else `inbox`).
 
 Keep raw debate, secrets, credentials, and unbounded command output out of durable memory. The feature note is the recovery ledger across compaction or session interruption.
 
@@ -69,7 +69,7 @@ Do not substitute a dynamic `Workflow` or `ultracode` run for the required PL Ag
 2. Claude Code without Agent Teams: do not silently downgrade to ordinary subagents. Report that live teammate discussion and panes are unavailable and ask the user to relaunch with Agent Teams enabled (their team launcher); continue with labeled lead-only role passes only if the user explicitly accepts that fallback.
 3. If the user accepts the lead-only fallback, record it in the feature note and label each role pass. Do not imply that peer sessions or direct teammate debate occurred.
 
-Do not require all roles for every task. Keep the team small enough to reduce coordination cost.
+Keep the team small enough to reduce coordination cost; select only value-adding roles per `references/roles.md`.
 
 ## Team Lifecycle
 
@@ -99,7 +99,7 @@ At completion or cancellation:
 2. Collect concise outputs and update the feature note.
 3. Ask every remaining teammate to shut down by runtime name. If a teammate rejects because work is active, resolve the task or delete it as obsolete and record the abandonment, then retry.
 4. Wait a bounded time for shutdown acknowledgement. If the task is settled and no required operation is still running, use `TaskStop` by teammate name as a force-stop fallback when the tool is available and confirm the teammate stopped. Record graceful shutdowns, force-stops, and any unconfirmed timeout separately.
-5. Do not call removed team cleanup tools or edit runtime files; Claude Code owns cleanup and retention.
+5. Do not call removed team cleanup tools; Claude Code owns cleanup and retention.
 6. Leave no idle Opus teammates or unresolved shared tasks after the feature is closed. An unconfirmed stop prevents `done` and must be reported as `done-with-risks` when the implementation is otherwise complete.
 
 ## Teammate Health and Restart
@@ -153,15 +153,14 @@ Do not rely on `/model` or later prompts to repair a wrong-model teammate. Check
 
 5. Decide
    - Make explicit PL decisions.
-   - For each durable decision, record context, options considered, selected option, rationale, consequences, validation, and status.
+   - For each durable decision, create a decision note per `references/memory-templates.md` (the full decision record).
    - If a decision supersedes an earlier note, update the old note status instead of deleting it.
-   - Analyze gate before any edit: confirm decisions, plan, and tasks agree (every decision maps to a task, no task outside the plan); resolve gaps first.
+   - Run the analyze gate from `references/debate-protocol.md` before any edit; resolve mismatches first.
 
 6. Implement
    - Follow the repo's local instructions first.
    - Keep edits scoped to the accepted plan.
-   - Avoid parallel same-file edits by multiple agents.
-   - The PL lead owns final integration. Delegate implementation edits to backend, frontend, or data teammates only when the work can be isolated by file or module.
+   - The PL lead owns final integration; delegate edits only with isolated file/module ownership (see `references/debate-protocol.md`).
    - Create dependency-aware implementation tasks and execute only currently unblocked work in parallel.
    - For complex or risky delegated edits, require the teammate's plan to be approved before implementation.
    - Update the feature-note execution ledger after each completed wave.
@@ -174,7 +173,7 @@ Do not rely on `/model` or later prompts to repair a wrong-model teammate. Check
    - If a verification step cannot run, record the exact reason and residual risk. Never convert unavailable evidence into a passing claim.
 
 8. Review
-   - Spawn `team-pl-code-reviewer` only now and run two ordered gates on the final diff — spec/decision compliance, then code quality — both required to pass.
+   - Spawn `team-pl-code-reviewer` only now; run the two ordered review gates from `references/debate-protocol.md` (both must pass).
    - Add QA, data, integration, or security review passes when the changed surface warrants them.
    - Validate findings against the repo instead of accepting them blindly. Fix material issues, rerun affected tests, and ask for re-review when the fix changes the risk surface.
 
@@ -193,6 +192,7 @@ Do not rely on `/model` or later prompts to repair a wrong-model teammate. Check
 - For version-specific external library facts, check for context7 MCP tools (via ToolSearch) and use them when present; proceed normally when absent.
 - Prefer reversible, locally consistent decisions when requirements are uncertain.
 - Treat user constraints as higher priority than agent preferences.
+- Communicate with the user in the user's language; keep agent-to-agent memos and code identifiers in English.
 - Do not let role agents make final decisions; the PL lead synthesizes and decides.
 - Do not store hidden reasoning. Store auditable summaries and rationale.
 - Apply the Safety Boundaries at the top of this skill to every decision.

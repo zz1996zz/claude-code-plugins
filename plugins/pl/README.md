@@ -4,7 +4,7 @@
 
 **`/pl:pl` 한 번으로 역할 에이전트 팀이 토론하고, 구현하고, 검증하고, 결정을 기억합니다**
 
-![version](https://img.shields.io/badge/version-0.1.4-blue)
+![version](https://img.shields.io/badge/version-0.1.5-blue)
 ![platform](https://img.shields.io/badge/platform-macOS%20%7C%20Linux-lightgrey?logo=apple)
 ![memory](https://img.shields.io/badge/memory-Obsidian%20%7C%20Notion-7c3aed)
 ![agents](https://img.shields.io/badge/role%20agents-9-success)

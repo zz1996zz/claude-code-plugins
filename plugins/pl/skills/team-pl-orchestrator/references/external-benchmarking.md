@@ -21,14 +21,14 @@ Before making a material system change:
 3. Extract only portable patterns with clear operational value.
 4. Reject patterns that increase token cost, coordination cost, or permission risk without a concrete benefit.
 5. Prefer small local changes over adopting a large framework.
-6. Record each inspected repository URL, commit SHA, inspection date, adopted patterns, and rejected alternatives in the relevant Obsidian work decision note.
+6. Record each inspected repository URL, commit SHA, inspection date, adopted patterns, and rejected alternatives in the relevant decision note of the configured memory backend.
 7. Search community examples for removed or version-sensitive APIs before copying lifecycle instructions. For Claude Code v2.1.178+, `TeamCreate` and `TeamDelete` are stale even when they appear in a recently updated repository.
 8. Check agent-name collisions and scope precedence. Managed, CLI, and project subagents override user-level definitions with the same name, so reusable personal roles need a distinctive namespace and a fail-closed collision path.
 9. When a search excerpt and current official docs disagree, inspect the current `llms-full.txt` source and the changelog matching the installed release before changing runtime policy. Search indexes can lag versioned tool contracts.
 
 ## Seed Repositories
 
-Use current search results rather than treating this list as exhaustive. The full inspected-repository provenance (URL, commit SHA, inspection date, adopted/rejected patterns — 73 unique repositories as of 2026-07) lives in the maintainer's memory backend (claude-team-pl work namespace).
+Use current search results rather than treating this list as exhaustive. The full inspected-repository provenance (URL, commit SHA, inspection date, adopted/rejected patterns) lives in the configured memory backend's decision notes for this work.
 
 - `anthropics/claude-code`: authoritative changelog for runtime contracts and removed tools.
 - `anthropics/skills`: official Agent Skills examples and marketplace packaging.
