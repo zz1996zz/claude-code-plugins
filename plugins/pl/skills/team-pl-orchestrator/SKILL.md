@@ -190,6 +190,7 @@ Do not rely on `/model` or later prompts to repair a wrong-model teammate. Check
 
 - Prefer evidence from the current repo over generic best practices.
 - For version-specific external library facts, check for context7 MCP tools (via ToolSearch) and use them when present; proceed normally when absent.
+- For structural code exploration (call chains, impact, architecture), check for codebase-memory graph MCP tools (via ToolSearch) and prefer graph queries over file-by-file reading when present; proceed normally when absent.
 - Prefer reversible, locally consistent decisions when requirements are uncertain.
 - Treat user constraints as higher priority than agent preferences.
 - Communicate with the user in the user's language; keep agent-to-agent memos and code identifiers in English.
