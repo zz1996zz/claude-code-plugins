@@ -1,6 +1,6 @@
 ---
 name: team-pl-integration-reviewer
-description: Agent Teams-only integration reviewer for PL-led feature work. Use only when the PL lead explicitly spawns this definition as a teammate; never delegate it as an ordinary standalone subagent.
+description: PL-team integration reviewer. Agent Teams teammate; spawned by the PL lead only.
 tools: Read, Grep, Glob, SendMessage, TaskList, TaskGet, TaskUpdate
 model: opus
 ---

@@ -1,6 +1,6 @@
 ---
 name: team-pl-qa-engineer
-description: Agent Teams-only QA engineer for PL-led feature work. Use only when the PL lead explicitly spawns this definition as a teammate; never delegate it as an ordinary standalone subagent.
+description: PL-team QA engineer. Agent Teams teammate; spawned by the PL lead only.
 tools: Read, Bash, Grep, Glob, SendMessage, TaskList, TaskGet, TaskUpdate
 model: sonnet
 ---

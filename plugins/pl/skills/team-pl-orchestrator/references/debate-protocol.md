@@ -42,7 +42,7 @@ Ask each selected role to respond independently. Do not show other role outputs 
 
 Each memo leads with its `Status:` line and covers the deliverable items defined in the role's definition body.
 
-Each teammate delivers the memo to the lead with `SendMessage` and updates its shared task before going idle. Never treat an idle notification alone as a delivered memo: if a teammate goes idle without one, run the idle-without-result triage in `SKILL.md` (task state, transcript, one explicit `SendMessage` nudge) before any reset.
+Each teammate delivers the memo to the lead with `SendMessage` and updates its shared task before going idle. Never treat an idle notification alone as a delivered memo: if a teammate goes idle without one, run the idle-without-result triage in `references/team-lifecycle.md` (task state, transcript, one explicit `SendMessage` nudge) before any reset.
 
 ## Synthesis
 
@@ -68,9 +68,9 @@ Run more rounds only when there is a material unresolved conflict. Stop when the
 
 ## Teammate Reset
 
-Use reset instead of repeated prompting when a teammate gives stale, irrelevant, wrong-role, wrong-model, or obviously low-quality output. Reset targets bad output, not merely undelivered output; for an idle teammate with no delivered memo, complete the idle-without-result triage in `SKILL.md` first.
+Use reset instead of repeated prompting when a teammate gives stale, irrelevant, wrong-role, wrong-model, or obviously low-quality output. Reset targets bad output, not merely undelivered output; for an idle teammate with no delivered memo, complete the idle-without-result triage in `references/team-lifecycle.md` first.
 
-Before any reset, save useful facts from the teammate's output into the PL synthesis, and settle or reassign its shared task without marking abandoned work complete. Then follow the replacement procedure in `SKILL.md` under Teammate Health and Restart. Use at most one repair prompt before reset. Do not let one confused teammate dominate the discussion.
+Before any reset, save useful facts from the teammate's output into the PL synthesis, and settle or reassign its shared task without marking abandoned work complete. Then follow the replacement procedure in `references/team-lifecycle.md` under Teammate Health and Restart. Use at most one repair prompt before reset. Do not let one confused teammate dominate the discussion.
 
 ## Decision
 
@@ -111,7 +111,7 @@ After implementation:
 
 ## Close
 
-Close the feature under `SKILL.md`: confirm no required task is pending or merely stale, read fresh verification output instead of trusting teammate completion claims, bring feature and decision notes up to date, then follow the completion-or-cancellation checklist in `SKILL.md` Team Lifecycle (shutdown, force-stop confirmation, lifecycle evidence) and run the memory link/index check. Classify the result under the Standing Completion Contract.
+Close the feature under `SKILL.md`: confirm no required task is pending or merely stale, read fresh verification output instead of trusting teammate completion claims, bring feature and decision notes up to date, then follow the completion-or-cancellation checklist in `references/team-lifecycle.md` Team Lifecycle (shutdown, force-stop confirmation, lifecycle evidence) and run the memory link/index check. Classify the result under the Standing Completion Contract.
 
 ## Memory Hygiene
 

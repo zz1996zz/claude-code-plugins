@@ -27,7 +27,8 @@ These two rules bind the lead itself and stay inside the compaction reattach win
 
 Durable memory lives in the user-selected backend. Before feature work, load the user config: `python3 "${CLAUDE_PLUGIN_ROOT}/skills/team-pl-orchestrator/scripts/pl_user_config.py" --config "${CLAUDE_PLUGIN_DATA}/config.json" show`.
 
-- No config yet: onboarding — ask one question (Obsidian vault, local markdown / Notion, official MCP), follow the Onboarding section of the chosen adapter reference, then save answers with `pl_user_config.py … init`.
+- No config yet: try self-repair before onboarding — run `pl_user_config.py … repair` (default scan root `~`; pass `--search-root` to narrow it). If it lists vault candidates, show them to the user (path, note count) with one confirm question, then re-link the confirmed root via `pl_user_config.py … init --backend obsidian --obsidian-root <root>`. Repair detects Obsidian vaults only and never writes; if the user says their backend was Notion, rerun Notion onboarding — its ensure steps reuse existing databases instead of duplicating them.
+- Repair found nothing, or the user declined every candidate: onboarding — ask one question (Obsidian vault, local markdown / Notion, official MCP), follow the Onboarding section of the chosen adapter reference, then save answers with `pl_user_config.py … init`.
 - `backend: obsidian` → follow `references/memory-obsidian.md` only.
 - `backend: notion` → follow `references/memory-notion.md` only.
 
@@ -42,6 +43,7 @@ If a backend write fails mid-work, save the note content under `${CLAUDE_PLUGIN_
 Each reference is the single source for its topic; do not restate its rules elsewhere.
 
 - `references/roles.md` — role selection, name mapping, model and tool policy, spawn timing, `team-pl-*` namespace and collision handling, and the role prompt contract. Read it before spawning anyone.
+- `references/team-lifecycle.md` — team audit and reuse, shutdown and force-stop, and idle or misbehaving teammate triage and restart. Read it at the start of every `/pl` request before spawning, when a teammate goes idle without a delivered result or misbehaves, and at completion or cancellation.
 - `references/debate-protocol.md` — the discussion and synthesis loop.
 - `references/memory-templates.md` — backend-neutral note structure and templates.
 - `references/memory-obsidian.md` — Obsidian adapter: vault layout, helper commands, onboarding.
@@ -50,7 +52,7 @@ Each reference is the single source for its topic; do not restate its rules else
 
 ## Platform Behavior
 
-On Claude Code v2.1.178+, every enabled session already has one implicit team, so spawn teammates directly with no setup step. `TeamCreate` and `TeamDelete` no longer exist, requested team names are ignored, and there is no separate team cleanup step; Claude Code owns session team config, so never hand-clean it or rely on a specific cleanup moment. Feature-boundary and session-reuse rules are in Team Lifecycle below.
+On Claude Code v2.1.178+, every enabled session already has one implicit team, so spawn teammates directly with no setup step. `TeamCreate` and `TeamDelete` no longer exist, requested team names are ignored, and there is no separate team cleanup step; Claude Code owns session team config, so never hand-clean it or rely on a specific cleanup moment. Feature-boundary and session-reuse rules are in `references/team-lifecycle.md`.
 
 Treat explicit invocation of this skill as permission to use role agents for the current feature unless the user says not to.
 
@@ -71,72 +73,13 @@ Do not substitute a dynamic `Workflow` or `ultracode` run for the required PL Ag
 
 Keep the team small enough to reduce coordination cost; select only value-adding roles per `references/roles.md`.
 
-## Team Lifecycle
-
-At the start of every `/pl` request:
-
-1. Inspect active teammates and the shared task list before spawning anyone.
-2. Reuse a healthy teammate only for a continuation of the same feature when its role and context still match.
-3. For a new feature, settle the previous tasks, ask every old teammate to shut down, and confirm graceful or forced stop before spawning fresh role sessions in the same session-scoped implicit team. Verify genuinely completed tasks; delete obsolete pending tasks with task controls and record the abandonment in the old feature note. Never mark abandoned work completed. If an old stop cannot be confirmed, do not spawn a replacement in the same session: use a new Claude session for hard isolation or continue lead-only with the overlap risk recorded. Do not carry stale conclusions across feature boundaries.
-4. Prefix every shared task subject with `[<feature-slug>]`. Task files can outlive teammate processes and session team config, so the prefix keeps sequential feature ledgers distinguishable.
-5. Do not reuse a runtime name that already appeared in the current session. Use the next suffix such as `pl-architect-r2` for both replacements and later features.
-6. After `/resume` or `/rewind`, reconcile the persisted task list but assume in-process teammates are gone until the panel proves otherwise; spawn replacements instead of messaging missing sessions.
-7. Never edit `~/.claude/teams/` or `~/.claude/tasks/` by hand. Use teammate and task controls; Claude Code owns runtime config and retention.
-
-During work:
-
-1. Use direct messages for peer questions, challenge, and interface handoffs. Avoid broadcast unless every teammate is affected.
-2. Wait for prerequisite analysis or implementation tasks before starting dependent work.
-3. Monitor stuck or stale task states; verify the output, then correct task status or replace the teammate when necessary.
-4. Require plan approval before a teammate edits for complex or risky implementation work.
-5. Keep the shared task list authoritative. Do not let a teammate start role work without an owned task; reconstruct missing task entries before continuing.
-6. After a teammate's final deliverable is accepted, shut it down when no dependency, revision, or re-review remains. Keep an idle teammate only for a named follow-up within the same feature.
-7. A teammate row hidden after an idle timeout is still running and addressable. Do not treat a hidden pane or row as shutdown; confirm through the task/panel state or a named message.
-
-At completion or cancellation:
-
-1. Confirm no required task remains pending or in progress.
-2. Collect concise outputs and update the feature note.
-3. Ask every remaining teammate to shut down by runtime name. If a teammate rejects because work is active, resolve the task or delete it as obsolete and record the abandonment, then retry.
-4. Wait a bounded time for shutdown acknowledgement. If the task is settled and no required operation is still running, use `TaskStop` by teammate name as a force-stop fallback when the tool is available and confirm the teammate stopped. Record graceful shutdowns, force-stops, and any unconfirmed timeout separately.
-5. Do not call removed team cleanup tools; Claude Code owns cleanup and retention.
-6. Leave no idle Opus teammates or unresolved shared tasks after the feature is closed. An unconfirmed stop prevents `done` and must be reported as `done-with-risks` when the implementation is otherwise complete.
-
-## Teammate Health and Restart
-
-Treat teammates as replaceable role sessions.
-
-If a teammate goes idle without a delivered result, triage before any correction or replacement:
-
-1. Check its shared task state. An untouched task usually means the memo was never sent with `SendMessage`, not that the role work failed.
-2. Read the teammate's transcript to recover undelivered work. Turn-ending text is not delivered to the lead, so a finished memo often waits there: identify the teammate's session through the members of `~/.claude/teams/<team>/config.json` (read-only) and read the matching session file under `~/.claude/projects/`, or ask the user to open the teammate's pane. Treat a recovered memo as the deliverable.
-3. Send one direct message telling the teammate to deliver the memo with the `SendMessage` tool and settle its owned task before going idle.
-4. Escalate below only when the transcript shows no usable work or the teammate stays unresponsive after that nudge. Do not conclude teammates cannot reply or fall back to lead-only passes without completing this triage.
-
-If a teammate is stale, confused, in the wrong role, using the wrong model, ignoring constraints, looping, or producing low-quality output:
-
-1. Try at most one concise correction if the issue is minor.
-2. For material issues, ask the teammate to shut down by name. If it does not stop after a bounded wait and no required operation should continue, use `TaskStop` by name and confirm the force-stop when available.
-3. Spawn a replacement only after the old session is confirmed stopped, using the same named `team-pl-*` agent type and a runtime suffix such as `-r2`, not a generic teammate. If stop cannot be confirmed, do not spawn a replacement in the same session; use a new Claude session or continue lead-only and record the overlap risk.
-4. Give the replacement a clean restart brief:
-   - Current feature request
-   - Relevant repo and memory facts
-   - Accepted PL decisions so far
-   - The exact role question
-   - What to ignore from the stale teammate output
-5. Record the restart in the feature note under Discussion Summary or Open Questions.
-
-Do not rely on `/model` or later prompts to repair a wrong-model teammate. Check for an invocation model override, `CLAUDE_CODE_SUBAGENT_MODEL`, and a higher-priority same-name definition. Remove the override when possible; replace the teammate only after the cause is resolved. Otherwise use the recorded lead-pass fallback rather than looping.
-
 ## Workflow
 
 1. Intake
-   - Restate the feature request in one short paragraph.
-   - Identify repo, runtime, likely impacted layers, acceptance criteria, risks, and unknowns.
    - Ask at most one blocking question only when implementation would otherwise be unsafe or impossible.
 
 2. Audit team and select roles
-   - Inspect existing teammates and tasks; retire stale sessions from earlier features.
+   - Inspect existing teammates and tasks per `references/team-lifecycle.md`; retire stale sessions from earlier features.
    - Select roles and spawn timing from `references/roles.md`: analysis roles first, implementation and review roles staged later only when warranted.
 
 3. Start the feature note
@@ -168,7 +111,6 @@ Do not rely on `/model` or later prompts to repair a wrong-model teammate. Check
 7. Verify
    - Run the narrowest meaningful tests first, then broader tests when risk or touched surface requires it.
    - For runnable or user-facing behavior, verify the actual app, CLI, or service path. Explicitly invoke Claude Code's `/verify` when it fits a standard project launch (no longer auto-run, 2.1.215+), or the repo's documented run procedure; tests alone are not full behavioral evidence.
-   - If tests fail, diagnose, fix, and rerun relevant verification.
    - Treat teammate claims as unverified until the PL sees fresh command output or independently checks the artifact.
    - If a verification step cannot run, record the exact reason and residual risk. Never convert unavailable evidence into a passing claim.
 
@@ -178,22 +120,18 @@ Do not rely on `/model` or later prompts to repair a wrong-model teammate. Check
    - Validate findings against the repo instead of accepting them blindly. Fix material issues, rerun affected tests, and ask for re-review when the fix changes the risk surface.
 
 9. Close
-   - Settle task states and shut down all teammates; team cleanup is automatic per Platform Behavior.
+   - Settle task states and shut down all teammates per the completion checklist in `references/team-lifecycle.md`; team cleanup is automatic per Platform Behavior.
    - If the user requested an explanation document, generate it from the final diff with the `explain-diff` skill and record its path in the feature note.
    - Record final lifecycle evidence, mark the feature `done`, `done-with-risks`, or `blocked` under the completion contract, then check memory links and indexes.
 
 10. Final response
-   - Summarize what changed, key decisions, files changed, tests run, and remaining risks.
-   - Mention the feature note and decision notes updated.
+   - Report key decisions, remaining risks, and the feature and decision notes updated alongside the standard summary.
 
 ## Decision Rules
 
-- Prefer evidence from the current repo over generic best practices.
 - For version-specific external library facts, check for context7 MCP tools (via ToolSearch) and use them when present; proceed normally when absent.
 - For structural code exploration (call chains, impact, architecture), check for codebase-memory graph MCP tools (via ToolSearch) and prefer graph queries over file-by-file reading when present; proceed normally when absent.
-- Prefer reversible, locally consistent decisions when requirements are uncertain.
-- Treat user constraints as higher priority than agent preferences.
-- Communicate with the user in the user's language; keep agent-to-agent memos and code identifiers in English.
+- Keep agent-to-agent memos and code identifiers in English regardless of the user's conversation language.
 - Do not let role agents make final decisions; the PL lead synthesizes and decides.
 - Do not store hidden reasoning. Store auditable summaries and rationale.
 - Apply the Safety Boundaries at the top of this skill to every decision.

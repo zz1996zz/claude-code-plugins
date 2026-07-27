@@ -76,6 +76,48 @@ class PlUserConfigTests(unittest.TestCase):
         self.assertEqual(2, result.returncode)
         self.assertIn("absolute", result.stderr)
 
+    def _make_vault(self, relative: str) -> Path:
+        vault = Path(self.tmp.name) / relative
+        for marker in ("decisions", "features", "work"):
+            (vault / marker).mkdir(parents=True)
+        (vault / "INDEX.md").write_text("# index\n", encoding="utf-8")
+        (vault / "decisions" / "sample.md").write_text("x\n", encoding="utf-8")
+        return vault
+
+    def test_repair_with_valid_config_reports_ok(self) -> None:
+        vault = self._make_vault("vault")
+        self.run_cli("init", "--backend", "obsidian", "--obsidian-root", str(vault))
+        result = self.run_cli("repair", "--search-root", self.tmp.name)
+        self.assertEqual(0, result.returncode, result.stderr)
+        data = json.loads(result.stdout)
+        self.assertEqual("ok", data["status"])
+        self.assertEqual("obsidian", data["config"]["backend"])
+
+    def test_repair_missing_config_finds_vault_and_writes_nothing(self) -> None:
+        vault = self._make_vault("notes/memory")
+        result = self.run_cli("repair", "--search-root", self.tmp.name)
+        self.assertEqual(0, result.returncode, result.stderr)
+        data = json.loads(result.stdout)
+        self.assertEqual("missing", data["status"])
+        self.assertEqual([str(vault)], [c["root"] for c in data["candidates"]])
+        self.assertEqual(2, data["candidates"][0]["notes"])  # INDEX.md + sample.md
+        self.assertFalse(self.config.exists())  # repair는 절대 쓰지 않는다
+
+    def test_repair_missing_config_no_candidates_exits_1(self) -> None:
+        result = self.run_cli("repair", "--search-root", self.tmp.name)
+        self.assertEqual(1, result.returncode, result.stderr)
+        data = json.loads(result.stdout)
+        self.assertEqual("missing", data["status"])
+        self.assertEqual([], data["candidates"])
+
+    def test_repair_ignores_partial_vault_markers(self) -> None:
+        partial = Path(self.tmp.name) / "half"
+        (partial / "decisions").mkdir(parents=True)
+        (partial / "INDEX.md").write_text("# index\n", encoding="utf-8")  # features/work 없음
+        result = self.run_cli("repair", "--search-root", self.tmp.name)
+        self.assertEqual(1, result.returncode, result.stderr)
+        self.assertEqual([], json.loads(result.stdout)["candidates"])
+
     def test_malformed_config_shape_exits_cleanly(self) -> None:
         self.config.parent.mkdir(parents=True, exist_ok=True)
         self.config.write_text(

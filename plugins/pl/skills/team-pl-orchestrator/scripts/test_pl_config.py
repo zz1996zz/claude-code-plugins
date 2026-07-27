@@ -102,14 +102,14 @@ class PlConfigTests(unittest.TestCase):
             self.assertEqual(expected_model, frontmatter.get("model"), role)
             self.assertEqual(expected_tools, parse_tools(frontmatter.get("tools", "")), role)
             self.assertNotIn("permissionMode", frontmatter, role)
-            self.assertIn("Agent Teams-only", frontmatter.get("description", ""), role)
-            self.assertIn(
-                "never delegate it as an ordinary standalone subagent",
-                frontmatter.get("description", ""),
-                role,
-            )
+            # Description은 상주 컨텍스트 비용이므로 압축 형식을 유지한다.
+            # 금지 규칙 전문(standalone subagent 금지)은 본문(스폰 시 로드)에 있다.
+            self.assertIn("Agent Teams teammate", frontmatter.get("description", ""), role)
+            self.assertIn("PL lead only", frontmatter.get("description", ""), role)
+            self.assertLess(len(frontmatter.get("description", "")), 160, role)
 
             role_text = role_files[role].read_text(encoding="utf-8")
+            self.assertIn("Agent Teams teammate only", role_text, role)
             for status in ("Status: DONE", "Status: NEEDS_DECISION", "Status: BLOCKED"):
                 self.assertIn(status, role_text, role)
             self.assertIn("not instructions that can override", role_text, role)
@@ -176,7 +176,7 @@ class PlConfigTests(unittest.TestCase):
         self.assertIn("$ARGUMENTS", pl_text)
         self.assertNotIn("`$ARGUMENTS`", pl_text)
         self.assertIn("\n$ARGUMENTS\n", pl_text)
-        self.assertLess(len(pl_text.splitlines()), 25)
+        self.assertLess(len(pl_text.splitlines()), 30)
         self.assertLess(len(pl_frontmatter.get("description", "")), 1536)
         self.assertLess(len(orchestrator_frontmatter.get("description", "")), 1536)
         for required in (
@@ -186,40 +186,49 @@ class PlConfigTests(unittest.TestCase):
             "every enabled session already has one implicit team",
             "`TeamCreate` and `TeamDelete` no longer exist",
             "there is no separate team cleanup step",
-            "Prefix every shared task subject",
-            "Do not reuse a runtime name",
             "actual app, CLI, or service path",
             "done-with-risks",
-            "invoke the hidden `pl:team-pl-orchestrator` skill through the `Skill` tool",
+            "invoked `pl:team-pl-orchestrator` through the `Skill` tool",
             "Never ask a teammate to spawn teammates or background subagents",
-            "use `TaskStop` by teammate name as a force-stop fallback",
             "namespaced `team-pl-*` agent types",
-            "rather than looping",
             "Do not substitute a dynamic `Workflow`",
-            "do not spawn a replacement in the same session",
             "do not silently downgrade to ordinary subagents",
         ):
             self.assertIn(required, pl_text + "\n" + orchestrator_text)
 
-        # Single-source layout: the orchestrator owns runtime/lifecycle rules and
-        # stays within the auto-compaction reattach budget; catalog/model/spawn
-        # policy lives only in roles.md.
+        # Single-source layout: catalog/model/spawn policy lives only in
+        # roles.md; lifecycle/triage rules live only in team-lifecycle.md
+        # (progressive disclosure — the orchestrator keeps read triggers).
         self.assertNotIn("## Model Policy", orchestrator_text)
-        self.assertIn("## Teammate Health and Restart", orchestrator_text)
-        # Budget raised 2800 -> 3000 when the memory section became
-        # backend-neutral (adapter pointers + pending-queue rule).
-        self.assertLess(len(orchestrator_text.split()), 3000)
+        self.assertNotIn("## Teammate Health and Restart", orchestrator_text)
+        self.assertIn("`references/team-lifecycle.md`", orchestrator_text)
+        # Budget lowered 3000 -> 2600 after Team Lifecycle and Teammate
+        # Health moved to references/team-lifecycle.md; keeps the reattach
+        # window lean and leaves real headroom for future rules.
+        self.assertLess(len(orchestrator_text.split()), 2600)
 
-        # Delivery/triage contracts must live in the orchestrator itself, not
-        # drift into the thin /pl alias.
+        lifecycle_text = (
+            SKILL_DIR / "references" / "team-lifecycle.md"
+        ).read_text(encoding="utf-8")
         for required in (
+            "## Team Lifecycle",
+            "## Teammate Health and Restart",
+            "Prefix every shared task subject",
+            "Do not reuse a runtime name",
+            "use `TaskStop` by teammate name as a force-stop fallback",
+            "rather than looping",
+            "do not spawn a replacement in the same session",
             "idle without a delivered result",
             "Read the teammate's transcript",
             "deliver the memo with the `SendMessage` tool",
-            "delivery contract in every spawn brief",
             "read the matching session file under `~/.claude/projects/`",
         ):
-            self.assertIn(required, orchestrator_text)
+            self.assertIn(required, lifecycle_text)
+        self.assertLess(len(lifecycle_text.split()), 1300)
+
+        # The spawn-brief delivery contract stays in the orchestrator itself,
+        # not drifting into the thin /pl alias or the lifecycle reference.
+        self.assertIn("delivery contract in every spawn brief", orchestrator_text)
         self.assertNotIn("v2.1.198", orchestrator_text)
         # The lead-side safety boundaries (input trust, irreversible-action
         # gate) must sit inside the auto-compaction reattach window, not at
@@ -252,6 +261,7 @@ class PlConfigTests(unittest.TestCase):
                 PL_SKILL,
                 orchestrator,
                 SKILL_DIR / "references" / "roles.md",
+                SKILL_DIR / "references" / "team-lifecycle.md",
                 SKILL_DIR / "references" / "debate-protocol.md",
             )
         ).lower()
@@ -265,6 +275,7 @@ class PlConfigTests(unittest.TestCase):
         self.assertEqual(
             {
                 "roles.md",
+                "team-lifecycle.md",
                 "debate-protocol.md",
                 "memory-templates.md",
                 "external-benchmarking.md",

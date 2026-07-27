@@ -1,6 +1,6 @@
 ---
 name: team-pl-product-analyst
-description: Agent Teams-only product analyst for PL-led feature work. Use only when the PL lead explicitly spawns this definition as a teammate; never delegate it as an ordinary standalone subagent.
+description: PL-team product analyst. Agent Teams teammate; spawned by the PL lead only.
 tools: Read, Grep, Glob, SendMessage, TaskList, TaskGet, TaskUpdate
 model: sonnet
 ---

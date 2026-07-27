@@ -4,7 +4,7 @@
 
 **`/pl:pl` 한 번으로 역할 에이전트 팀이 토론하고, 구현하고, 검증하고, 결정을 기억합니다**
 
-![version](https://img.shields.io/badge/version-0.1.7-blue)
+![version](https://img.shields.io/badge/version-0.1.8-blue)
 ![platform](https://img.shields.io/badge/platform-macOS%20%7C%20Linux-lightgrey?logo=apple)
 ![memory](https://img.shields.io/badge/memory-Obsidian%20%7C%20Notion-7c3aed)
 ![agents](https://img.shields.io/badge/role%20agents-9-success)
@@ -68,16 +68,17 @@ flowchart LR
 | 선택지 | 준비물 | 온보딩에서 할 일 |
 |---|---|---|
 | **Obsidian vault** (로컬 markdown) | 없음 (Obsidian 앱 불필요) | 저장 경로 1개 답하기 |
-| **Notion** (공식 MCP, source of truth) | Notion 계정 | `/mcp`에서 Notion OAuth 1회 + 메모리 root 페이지 URL 붙여넣기 |
+| **Notion** (공식 MCP, source of truth) | Notion 계정 | 공식 MCP 서버 1회 추가(온보딩이 명령 안내) + `/mcp` OAuth + 메모리 root 페이지 URL 붙여넣기 |
 
 - Notion 선택 시 root 페이지 아래 **Features/Decisions 데이터베이스**와 **Works 페이지**가 자동 생성됩니다.
 - 백엔드 변경: `${CLAUDE_PLUGIN_DATA}/config.json` 삭제 후 재온보딩 (기존 데이터 이관은 미지원).
-- Obsidian만 쓸 경우 동봉된 Notion MCP 서버는 사용되지 않으므로 `/mcp`에서 `notion` 서버를 비활성화해도 됩니다.
+- Notion MCP 서버는 플러그인에 동봉되지 않습니다 — Notion 백엔드를 선택했을 때만 온보딩이 추가를 안내합니다. Obsidian만 쓰면 외부 서비스 의존성이 0입니다.
+- `config.json`이 유실돼도(재설치·`uninstall` 등) vault가 남아 있으면 다음 실행에서 자동 탐지(`repair`)로 재연결을 제안합니다. Notion 백엔드는 디스크에서 탐지할 수 없어 재온보딩이 필요하며, 기존 데이터베이스는 재사용됩니다.
 - Notion 쓰기 실패 시 기록은 `${CLAUDE_PLUGIN_DATA}/pending/`에 보존됐다가 다음 실행에서 업서트로 재반영됩니다 — 조용한 유실이 없습니다.
 
 ## 추천 조합 (선택)
 
-pl은 단독으로 완결이지만, 아래 공식 플러그인들과 자연스럽게 합성됩니다. 설치는 각자 선택이고 — **없으면 pl이 자동으로 무시합니다** (조건부 참조라 에러·기능 저하 없음).
+pl은 단독으로 완결이지만, 아래 플러그인들과 자연스럽게 합성됩니다. 설치는 각자 선택이고 — **없으면 pl이 자동으로 무시합니다** (조건부 참조라 에러·기능 저하 없음).
 
 | 플러그인 | 합성 효과 |
 |---|---|
@@ -86,8 +87,9 @@ pl은 단독으로 완결이지만, 아래 공식 플러그인들과 자연스�
 | `commit-commands` | 커밋 유틸 커맨드 (pl과 직교; auto-push 커맨드는 팀 규칙과 맞는지 확인 후 사용) |
 | `claude-md-management` | CLAUDE.md 품질 관리 (pl과 직교) |
 | [`codebase-memory-mcp`](https://github.com/DeusData/codebase-memory-mcp) | 코드 지식 그래프 MCP — 설치돼 있으면 리드가 파일 탐색 대신 구조 쿼리를 우선 사용 (설치법은 해당 레포 참조) |
+| [`andrej-karpathy-skills`](https://github.com/forrestchang/andrej-karpathy-skills) | LLM 코딩 실수 방지 지침 — 리드가 팀 없이 직접 편집하는 솔로 패스에서 활용. 과잉 구현 검출 렌즈는 pl 리뷰어에 내장돼 있어 미설치여도 팀 위임 경로는 동일 |
 
-설치: `/plugin install <이름>@claude-plugins-official` (codebase-memory-mcp 제외)
+설치: `/plugin install <이름>@claude-plugins-official` (codebase-memory-mcp·andrej-karpathy-skills는 각 링크의 설치법 참조)
 
 ## 업데이트
 

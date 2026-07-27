@@ -33,7 +33,7 @@ Use these predictable runtime names so direct messages, task assignment, restart
 - `pl-integration` -> `team-pl-integration-reviewer`
 - `pl-security` -> `team-pl-security-reviewer`
 
-For a replacement or a later feature in the same session, append `-r2`, `-r3`, and so on; the runtime-name non-reuse rule lives in `SKILL.md` Team Lifecycle.
+For a replacement or a later feature in the same session, append `-r2`, `-r3`, and so on; the runtime-name non-reuse rule lives in `references/team-lifecycle.md` Team Lifecycle.
 
 ## Agent Teams Only
 
@@ -57,6 +57,7 @@ Use only Sonnet and Opus. Do not use Haiku. Do not create separate `*-opus` role
 - Discovery/design: start non-trivial feature work with `pl-product`, `pl-architect`, and `pl-qa`.
 - Implementation: backend, frontend, or data engineer only after scope, dependencies, success criteria, and file ownership are set.
 - Review: code reviewer as `pl-review` only after a meaningful diff exists — do not leave an Opus reviewer idle during discovery and design. Add integration and security reviewers only when the changed surface warrants them.
+- Batch spawns per stage: create every teammate the current stage needs in ONE message containing multiple spawn calls (discovery/design roles together; implementation roles together; review roles together). One-per-message spawning costs an extra round trip and permission prompt per role. Never pull a later stage's role into an earlier batch just to batch it — the stage boundaries above still gate when each role may start.
 
 ## Tool Policy
 
