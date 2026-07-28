@@ -31,7 +31,7 @@ At completion or cancellation:
 3. Ask every remaining teammate to shut down by runtime name. If a teammate rejects because work is active, resolve the task or delete it as obsolete and record the abandonment, then retry.
 4. Wait a bounded time for shutdown acknowledgement. If the task is settled and no required operation is still running, use `TaskStop` by teammate name as a force-stop fallback when the tool is available and confirm the teammate stopped. Record graceful shutdowns, force-stops, and any unconfirmed timeout separately.
 5. Do not call removed team cleanup tools; Claude Code owns cleanup and retention.
-6. Leave no idle Opus teammates or unresolved shared tasks after the feature is closed. An unconfirmed stop prevents `done` and must be reported as `done-with-risks` when the implementation is otherwise complete.
+6. Leave no idle teammates or unresolved shared tasks after the feature is closed. An unconfirmed stop prevents `done` and must be reported as `done-with-risks` when the implementation is otherwise complete.
 
 ## Teammate Health and Restart
 

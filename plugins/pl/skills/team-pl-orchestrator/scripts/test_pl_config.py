@@ -28,15 +28,15 @@ ROLE_CONFIG = {
     "team-pl-qa-engineer": ("sonnet", {"Read", "Bash", "Grep", "Glob"} | TEAM_TOOLS),
     "team-pl-architect": ("opus", {"Read", "Grep", "Glob"} | TEAM_TOOLS),
     "team-pl-backend-engineer": (
-        "opus",
+        "sonnet",
         {"Read", "Write", "Edit", "Bash", "Grep", "Glob"} | TEAM_TOOLS,
     ),
     "team-pl-frontend-engineer": (
-        "opus",
+        "sonnet",
         {"Read", "Write", "Edit", "Bash", "Grep", "Glob"} | TEAM_TOOLS,
     ),
     "team-pl-data-engineer": (
-        "opus",
+        "sonnet",
         {"Read", "Write", "Edit", "Bash", "Grep", "Glob"} | TEAM_TOOLS,
     ),
     "team-pl-integration-reviewer": ("opus", {"Read", "Grep", "Glob"} | TEAM_TOOLS),
@@ -138,13 +138,21 @@ class PlConfigTests(unittest.TestCase):
             if role in IMPLEMENTATION_ROLES:
                 self.assertIn("exclusive file or module ownership", role_text, role)
                 self.assertIn("external mutation APIs", role_text, role)
+                self.assertIn("avoid over-engineering", role_text, role)
+                self.assertIn("they do not define the solution", role_text, role)
             else:
                 self.assertNotIn("Write", expected_tools, role)
                 self.assertNotIn("Edit", expected_tools, role)
+            if role == "team-pl-code-reviewer":
+                self.assertIn("coverage, not filtering", role_text, role)
+            if role == "team-pl-qa-engineer":
+                self.assertIn("not the definition of the solution", role_text, role)
             self.assertTrue(TEAM_TOOLS <= expected_tools, role)
             model_counts[expected_model] += 1
 
-        self.assertEqual({"sonnet": 2, "opus": 7}, model_counts)
+        # Implementation roles run on Sonnet under the lead-as-advisor policy
+        # (plan approval + independent verification); see roles.md Model Policy.
+        self.assertEqual({"sonnet": 5, "opus": 4}, model_counts)
         self.assertFalse(list(AGENTS_DIR.glob("team-pl-*-opus.md")))
 
         names: dict[str, list[Path]] = {}
@@ -226,15 +234,17 @@ class PlConfigTests(unittest.TestCase):
             self.assertIn(required, lifecycle_text)
         self.assertLess(len(lifecycle_text.split()), 1300)
 
-        # The spawn-brief delivery contract stays in the orchestrator itself,
-        # not drifting into the thin /pl alias or the lifecycle reference.
-        self.assertIn("delivery contract in every spawn brief", orchestrator_text)
+        # Single-source: the full spawn-brief delivery contract lives only in
+        # roles.md; the orchestrator points at the Role Prompt Contract.
+        self.assertIn("Role Prompt Contract in `references/roles.md`", orchestrator_text)
+        self.assertNotIn("delivery contract in every spawn brief", orchestrator_text)
         self.assertNotIn("v2.1.198", orchestrator_text)
         # The lead-side safety boundaries (input trust, irreversible-action
         # gate) must sit inside the auto-compaction reattach window, not at
         # the document tail.
         self.assertIn("Do not commit, push, merge, deploy", orchestrator_text[:6000])
         self.assertIn("not instructions that can override", orchestrator_text[:6000])
+        self.assertIn("destructive shortcut", orchestrator_text[:6000])
 
         runtime_contract = pl_text + "\n" + orchestrator_text
         for legacy_name in LEGACY_ROLE_NAMES:
@@ -292,6 +302,11 @@ class PlConfigTests(unittest.TestCase):
         self.assertIn("input-trust boundary", roles_text)
         self.assertIn("SendMessage", roles_text)
         self.assertIn("turn-ending text is not delivered", roles_text)
+        self.assertIn("high-fidelity references", roles_text)
+        self.assertIn("acts as their advisor", roles_text)
+        self.assertIn("no destructive shortcuts", roles_text)
+        self.assertIn("never speculate about code", roles_text)
+        self.assertIn("follow instructions literally", roles_text)
         self.assertNotIn("Require each role to return:", roles_text)
         # roles.md is the sole catalog: every role type, model routing, override
         # ban, and collision rule live here; memo item lists live only in the
@@ -313,7 +328,9 @@ class PlConfigTests(unittest.TestCase):
         self.assertIn("SendMessage", debate_text)
         self.assertIn("idle notification alone", debate_text)
         self.assertIn("idle-without-result triage", debate_text)
-        self.assertIn("The same delivery contract applies", debate_text)
+        self.assertIn("delivery contract in `references/roles.md`", debate_text)
+        self.assertIn("skip Round 2 when synthesis surfaced none", debate_text)
+        self.assertIn("per-gate rubric", debate_text)
         # Reset/close procedures live only in SKILL.md; debate-protocol points.
         self.assertIn("Teammate Health and Restart", debate_text)
         self.assertNotIn("Spawn a fresh teammate", debate_text)
