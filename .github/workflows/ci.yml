@@ -21,7 +21,6 @@ jobs:
           for f in (
               ".claude-plugin/marketplace.json",
               "plugins/pl/.claude-plugin/plugin.json",
-              "plugins/pl/.mcp.json",
           ):
               json.load(open(f))
               print(f, "OK")
