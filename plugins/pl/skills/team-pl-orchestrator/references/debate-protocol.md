@@ -42,7 +42,7 @@ Ask each selected role to respond independently. Do not show other role outputs 
 
 Each memo leads with its `Status:` line and covers the deliverable items defined in the role's definition body.
 
-Each teammate delivers the memo to the lead with `SendMessage` and updates its shared task before going idle. Never treat an idle notification alone as a delivered memo: if a teammate goes idle without one, run the idle-without-result triage in `references/team-lifecycle.md` (task state, transcript, one explicit `SendMessage` nudge) before any reset.
+The delivery contract in `references/roles.md` governs every memo. Never treat an idle notification alone as a delivered memo: if a teammate goes idle without one, run the idle-without-result triage in `references/team-lifecycle.md` (task state, transcript, one explicit `SendMessage` nudge) before any reset.
 
 ## Synthesis
 
@@ -56,13 +56,13 @@ The PL lead summarizes:
 
 ## Round 2: Critique
 
-Use direct teammate messages for material critique instead of sending every message to everyone. Assign each selected role one relevant peer claim to challenge, then have the recipient answer the challenge. Ask for:
+Use direct teammate messages for material critique instead of sending every message to everyone. Assign one peer challenge per material disagreement or risky untested assumption surfaced in synthesis — not one per role as a quota — and skip Round 2 when synthesis surfaced none. The recipient answers each challenge. Ask for:
 - What is wrong or missing?
 - Which decision is risky?
 - Which simpler option should be considered?
 - What must be tested?
 
-Each challenge must name the claim, cite repo or requirement evidence, and state what would change the recommendation. Each response must accept, reject, or narrow the claim with evidence. Both teammates then send the PL a concise revised conclusion. The same delivery contract applies in every round: challenge answers and revised conclusions reach the PL only through `SendMessage`, and an idle teammate without a delivered response gets the same idle-without-result triage.
+Each challenge must name the claim, cite repo or requirement evidence, and state what would change the recommendation. Each response must accept, reject, or narrow the claim with evidence. Both teammates then send the PL a concise revised conclusion. The delivery contract and the idle-without-result triage apply to challenge answers and revised conclusions exactly as to Round 1 memos.
 
 Run more rounds only when there is a material unresolved conflict. Stop when the PL can state the selected option, rejected alternatives, risks, and validation plan without relying on unresolved assumptions.
 
@@ -100,7 +100,7 @@ Do not coordinate role work through panes or ad hoc messages alone: every active
 
 After implementation:
 1. Summarize the diff.
-2. Spawn code-reviewer on the final diff and accepted requirements; do not keep it idle before a diff exists. Brief it with scoped context only — accepted requirements and PL decisions, the `BASE_SHA..HEAD_SHA` range, and the diff summary — and never the lead's session history or reasoning trace, so the review judges the artifact, not the process.
+2. Spawn code-reviewer on the final diff and accepted requirements; do not keep it idle before a diff exists. Brief it with scoped context only — accepted requirements and PL decisions, the `BASE_SHA..HEAD_SHA` range, and the diff summary — and never the lead's session history or reasoning trace, so the review judges the artifact, not the process. Convert the brief into a per-gate rubric: each accepted requirement and PL decision becomes a checkable Gate 1 item, and the Gate 2 quality dimensions become items, so the reviewer returns a verdict per item instead of free-form impressions.
 3. Require two ordered review gates, both of which must pass:
    - Gate 1 — spec/decision compliance: the diff satisfies the accepted requirements and PL decisions, with no silent scope drift.
    - Gate 2 — code quality: correctness, maintainability, behavior changes, and missing tests.
