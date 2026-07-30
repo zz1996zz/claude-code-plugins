@@ -4,7 +4,7 @@
 
 **`/pl:pl` 한 번으로 역할 에이전트 팀이 토론하고, 구현하고, 검증하고, 결정을 기억합니다**
 
-![version](https://img.shields.io/badge/version-0.1.8-blue)
+![version](https://img.shields.io/badge/version-0.1.10-blue)
 ![platform](https://img.shields.io/badge/platform-macOS%20%7C%20Linux-lightgrey?logo=apple)
 ![memory](https://img.shields.io/badge/memory-Obsidian%20%7C%20Notion-7c3aed)
 ![agents](https://img.shields.io/badge/role%20agents-9-success)
@@ -87,9 +87,9 @@ pl은 단독으로 완결이지만, 아래 플러그인들과 자연스럽게 �
 | `commit-commands` | 커밋 유틸 커맨드 (pl과 직교; auto-push 커맨드는 팀 규칙과 맞는지 확인 후 사용) |
 | `claude-md-management` | CLAUDE.md 품질 관리 (pl과 직교) |
 | [`codebase-memory-mcp`](https://github.com/DeusData/codebase-memory-mcp) | 코드 지식 그래프 MCP — 설치돼 있으면 리드가 파일 탐색 대신 구조 쿼리를 우선 사용 (설치법은 해당 레포 참조) |
-| [`andrej-karpathy-skills`](https://github.com/forrestchang/andrej-karpathy-skills) | LLM 코딩 실수 방지 지침 — 리드가 팀 없이 직접 편집하는 솔로 패스에서 활용. 과잉 구현 검출 렌즈는 pl 리뷰어에 내장돼 있어 미설치여도 팀 위임 경로는 동일 |
+| [`ponytail`](https://github.com/DietrichGebert/ponytail) | 훅 기반 상시 미니멀리즘 모드 (YAGNI·stdlib 우선) — 리드와 팀원 편집 전반에 최소 해법을 강제. 과잉 구현 검출 렌즈는 pl 리뷰어에 내장돼 있어 미설치여도 팀 위임 경로는 동일 |
 
-설치: `/plugin install <이름>@claude-plugins-official` (codebase-memory-mcp·andrej-karpathy-skills는 각 링크의 설치법 참조)
+설치: `/plugin install <이름>@claude-plugins-official` (codebase-memory-mcp·ponytail은 각 링크의 설치법 참조)
 
 ## 업데이트
 
