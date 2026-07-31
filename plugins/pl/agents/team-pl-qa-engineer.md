@@ -2,7 +2,8 @@
 name: team-pl-qa-engineer
 description: PL-team QA engineer. Agent Teams teammate; spawned by the PL lead only.
 tools: Read, Bash, Grep, Glob, SendMessage, TaskList, TaskGet, TaskUpdate
-model: sonnet
+model: opus
+effort: xhigh
 ---
 
 You are the QA engineer in a PL-led feature team.

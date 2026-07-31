@@ -25,7 +25,7 @@ TEAM_TOOLS = {"SendMessage", "TaskList", "TaskGet", "TaskUpdate"}
 
 ROLE_CONFIG = {
     "team-pl-product-analyst": ("sonnet", {"Read", "Grep", "Glob"} | TEAM_TOOLS),
-    "team-pl-qa-engineer": ("sonnet", {"Read", "Bash", "Grep", "Glob"} | TEAM_TOOLS),
+    "team-pl-qa-engineer": ("opus", {"Read", "Bash", "Grep", "Glob"} | TEAM_TOOLS),
     "team-pl-architect": ("opus", {"Read", "Grep", "Glob"} | TEAM_TOOLS),
     "team-pl-backend-engineer": (
         "sonnet",
@@ -101,6 +101,10 @@ class PlConfigTests(unittest.TestCase):
             self.assertEqual(role, frontmatter.get("name"))
             self.assertEqual(expected_model, frontmatter.get("model"), role)
             self.assertEqual(expected_tools, parse_tools(frontmatter.get("tools", "")), role)
+            # Opus roles are the checks other work depends on; pin their effort so a
+            # later edit cannot silently drop recall. Sonnet roles run at the default.
+            expected_effort = "xhigh" if expected_model == "opus" else None
+            self.assertEqual(expected_effort, frontmatter.get("effort"), role)
             self.assertNotIn("permissionMode", frontmatter, role)
             # Description은 상주 컨텍스트 비용이므로 압축 형식을 유지한다.
             # 금지 규칙 전문(standalone subagent 금지)은 본문(스폰 시 로드)에 있다.
@@ -150,9 +154,10 @@ class PlConfigTests(unittest.TestCase):
             self.assertTrue(TEAM_TOOLS <= expected_tools, role)
             model_counts[expected_model] += 1
 
-        # Implementation roles run on Sonnet under the lead-as-advisor policy
-        # (plan approval + independent verification); see roles.md Model Policy.
-        self.assertEqual({"sonnet": 5, "opus": 4}, model_counts)
+        # Sonnet where a wrong output is caught downstream (lead verifies
+        # implementation; the user answers the product memo's open questions),
+        # Opus where the output is itself the check; see roles.md Model Policy.
+        self.assertEqual({"sonnet": 4, "opus": 5}, model_counts)
         self.assertFalse(list(AGENTS_DIR.glob("team-pl-*-opus.md")))
 
         names: dict[str, list[Path]] = {}
@@ -303,7 +308,8 @@ class PlConfigTests(unittest.TestCase):
         self.assertIn("SendMessage", roles_text)
         self.assertIn("turn-ending text is not delivered", roles_text)
         self.assertIn("high-fidelity references", roles_text)
-        self.assertIn("acts as their advisor", roles_text)
+        self.assertIn("when the output is itself the check", roles_text)
+        self.assertIn("also set `effort: xhigh` in frontmatter", roles_text)
         self.assertIn("no destructive shortcuts", roles_text)
         self.assertIn("never speculate about code", roles_text)
         self.assertIn("follow instructions literally", roles_text)
@@ -330,6 +336,9 @@ class PlConfigTests(unittest.TestCase):
         self.assertIn("idle-without-result triage", debate_text)
         self.assertIn("delivery contract in `references/roles.md`", debate_text)
         self.assertIn("skip Round 2 when synthesis surfaced none", debate_text)
+        # A blank Round 2 section cannot be told apart later from an unrecorded
+        # round or from conflicts the lead never noticed; force an explicit skip.
+        self.assertIn("skipped — no material conflict in synthesis", debate_text)
         self.assertIn("per-gate rubric", debate_text)
         # Reset/close procedures live only in SKILL.md; debate-protocol points.
         self.assertIn("Teammate Health and Restart", debate_text)
