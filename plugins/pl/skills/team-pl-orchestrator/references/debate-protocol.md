@@ -66,6 +66,8 @@ Each challenge must name the claim, cite repo or requirement evidence, and state
 
 Run more rounds only when there is a material unresolved conflict. Stop when the PL can state the selected option, rejected alternatives, risks, and validation plan without relying on unresolved assumptions.
 
+Record the outcome either way in the feature note's `### Round 2` section: the challenges assigned, or `skipped — no material conflict in synthesis`. Left blank, a correctly skipped round is indistinguishable later from one that ran unrecorded or from conflicts the lead never noticed.
+
 ## Teammate Reset
 
 Use reset instead of repeated prompting when a teammate gives stale, irrelevant, wrong-role, wrong-model, or obviously low-quality output. Reset targets bad output, not merely undelivered output; for an idle teammate with no delivered memo, complete the idle-without-result triage in `references/team-lifecycle.md` first.

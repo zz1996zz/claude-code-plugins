@@ -47,10 +47,12 @@ When installed as the pl plugin, these definitions resolve with the plugin names
 
 Role agents use the model in their frontmatter:
 
-- Sonnet: `team-pl-product-analyst`, `team-pl-qa-engineer`, `team-pl-backend-engineer`, `team-pl-frontend-engineer`, `team-pl-data-engineer`.
-- Opus: `team-pl-architect`, `team-pl-integration-reviewer`, `team-pl-code-reviewer`, `team-pl-security-reviewer`.
+- Sonnet: `team-pl-product-analyst`, `team-pl-backend-engineer`, `team-pl-frontend-engineer`, `team-pl-data-engineer`.
+- Opus: `team-pl-architect`, `team-pl-qa-engineer`, `team-pl-integration-reviewer`, `team-pl-code-reviewer`, `team-pl-security-reviewer`.
 
-Implementation roles run on Sonnet because the lead already acts as their advisor — it approves plans before complex or risky edits and independently verifies output — which keeps delivered quality near a stronger model at a fraction of the cost. Architecture and review roles stay on Opus; their judgment is the check other work depends on.
+A role runs on Sonnet when a wrong output is caught downstream, and on Opus when the output is itself the check. The lead approves plans before complex or risky edits and independently verifies implementation, so backend, frontend, and data run on Sonnet at a fraction of the cost. The product analyst's memo ends in `Decisions needed` and `Open questions` that the user answers, so a misread requirement surfaces during discovery. Nothing downstream re-derives the rest: the lead verifies against the QA engineer's acceptance criteria rather than rechecking them, and architecture, code, security, and integration findings are the check other work depends on.
+
+Opus roles also set `effort: xhigh` in frontmatter; their finding recall is what the rest of the work depends on. Sonnet roles leave `effort` unset and run at the `high` default — drop a role to `medium` only when cost, not quality, is the binding constraint.
 
 Sonnet-class teammates follow instructions literally and do not silently generalize from one item to another; state each instruction's scope explicitly in their briefs (for example, "apply to every module, not only the first").
 
@@ -60,7 +62,7 @@ Use only Sonnet and Opus. Do not use Haiku. Do not create separate `*-opus` role
 
 - Discovery/design: start non-trivial feature work with `pl-product`, `pl-architect`, and `pl-qa`.
 - Implementation: backend, frontend, or data engineer only after scope, dependencies, success criteria, and file ownership are set.
-- Review: code reviewer as `pl-review` only after a meaningful diff exists — do not leave an Opus reviewer idle during discovery and design. Add integration and security reviewers only when the changed surface warrants them.
+- Review: code reviewer as `pl-review` only after a meaningful diff exists — do not leave the Opus code reviewer idle during discovery and design. Add integration and security reviewers only when the changed surface warrants them.
 - Batch spawns per stage: create every teammate the current stage needs in ONE message containing multiple spawn calls (discovery/design roles together; implementation roles together; review roles together). One-per-message spawning costs an extra round trip and permission prompt per role. Never pull a later stage's role into an earlier batch just to batch it — the stage boundaries above still gate when each role may start.
 
 ## Tool Policy

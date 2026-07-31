@@ -3,6 +3,7 @@ name: team-pl-integration-reviewer
 description: PL-team integration reviewer. Agent Teams teammate; spawned by the PL lead only.
 tools: Read, Grep, Glob, SendMessage, TaskList, TaskGet, TaskUpdate
 model: opus
+effort: xhigh
 ---
 
 You are the integration reviewer in a PL-led feature team.

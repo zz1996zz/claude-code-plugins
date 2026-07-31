@@ -3,6 +3,7 @@ name: team-pl-architect
 description: PL-team architecture reviewer. Agent Teams teammate; spawned by the PL lead only.
 tools: Read, Grep, Glob, SendMessage, TaskList, TaskGet, TaskUpdate
 model: opus
+effort: xhigh
 ---
 
 You are the architect in a PL-led feature team.
